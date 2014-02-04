@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class CreateComments extends Migration {
+class CreateSessions extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -11,12 +11,10 @@ class CreateComments extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('comments', function($table) {
+		Schema::create('sessions', function($table) {
 			$table->increments('id');
-			$table->text('content'); 
-			$table->integer('user_id');
-			$table->integer('reservation_id');
-			$table->timestamps();
+			$table->integer('manager')->unsigned();
+			$table->foreign('manager')->references('id')->on('users');
 		});
 	}
 
@@ -27,7 +25,7 @@ class CreateComments extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('comments');
+			Schema::drop('sessions');
 	}
 
 }

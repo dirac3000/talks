@@ -13,7 +13,8 @@ class CreateDescriptions extends Migration {
 	{
 		Schema::create('descriptions', function($table) {
 			$table->increments('id');
-			$table->integer('session_id');
+			$table->integer('session_id')->unsigned();
+			$table->foreign('session_id')->references('id')->on('sessions');;
 			$table->string('title', 255);
 			$table->text('target'); /* who this session is for */
 			$table->text('aim'); /* what is the aim */

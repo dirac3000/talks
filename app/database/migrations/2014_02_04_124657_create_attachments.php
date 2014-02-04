@@ -14,8 +14,10 @@ class CreateAttachments extends Migration {
 		Schema::create('attachments', function($table) {
 			$table->increments('id');
 			$table->string('path', 500); 
-			$table->integer('session_id');
-			$table->integer('user_id');
+			$table->integer('session_id')->unsigned();
+			$table->foreign('session_id')->references('id')->on('sessions');;
+			$table->integer('user_id')->unsigned();
+			$table->foreign('user_id')->references('id')->on('users');
 			$table->enum('privacy', 
 				array('public', 'private'))->default('public');
 			$table->timestamps();
