@@ -15,7 +15,7 @@ class CreateAttachments extends Migration {
 			$table->increments('id');
 			$table->string('path', 500); 
 			$table->integer('session_id')->unsigned();
-			$table->foreign('session_id')->references('id')->on('sessions');;
+			$table->foreign('session_id')->references('id')->on('talks');;
 			$table->integer('user_id')->unsigned();
 			$table->foreign('user_id')->references('id')->on('users');
 			$table->enum('privacy', 

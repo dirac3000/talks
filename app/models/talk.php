@@ -1,6 +1,6 @@
 <?php
 
-class Session extends Eloquent {
+class Talk extends Eloquent {
 
 	public function descriptions()
 	{

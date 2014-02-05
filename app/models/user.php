@@ -27,9 +27,9 @@ class User extends Eloquent {
 		return $this->hasMany('Reservation');
 	}
 
-	public function sessions()
+	public function talks()
 	{
-		return $this->hasMany('Sessions');
+		return $this->hasMany('Talk');
 	}
 
 	public function speakers()

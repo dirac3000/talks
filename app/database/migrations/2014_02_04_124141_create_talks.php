@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSessions extends Migration {
+class CreateTalks extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -11,7 +11,7 @@ class CreateSessions extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('sessions', function($table) {
+		Schema::create('talks', function($table) {
 			$table->increments('id');
 			$table->integer('manager')->unsigned();
 			$table->foreign('manager')->references('id')->on('users');
@@ -25,7 +25,7 @@ class CreateSessions extends Migration {
 	 */
 	public function down()
 	{
-			Schema::drop('sessions');
+			Schema::drop('talks');
 	}
 
 }

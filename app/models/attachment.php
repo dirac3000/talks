@@ -4,7 +4,7 @@ class Attachment extends Eloquent {
 
 	public function session()
 	{
-		return $this->belongsTo('Session');
+		return $this->belongsTo('Talk');
 	}
 
 	public function user()

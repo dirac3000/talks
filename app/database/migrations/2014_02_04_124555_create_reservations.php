@@ -14,7 +14,7 @@ class CreateReservations extends Migration {
 		Schema::create('reservations', function($table) {
 			$table->increments('id');
 			$table->integer('session_id')->unsigned();
-			$table->foreign('session_id')->references('id')->on('sessions');
+			$table->foreign('session_id')->references('id')->on('talks');
 			$table->integer('user_id')->unsigned();
 			$table->foreign('user_id')->references('id')->on('users');
 			$table->enum('status',

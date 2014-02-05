@@ -55,7 +55,7 @@ return array(
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => 'localhost',
-			'database'  => 'sessions',
+			'database'  => 'talks',
 			'username'  => 'root',
 			'password'  => 'Parrot2014',
 			'charset'   => 'utf8',

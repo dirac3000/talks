@@ -4,7 +4,7 @@ class Description extends Eloquent {
 
 	public function session()
 	{
-		return $this->belongsTo('Session');
+		return $this->belongsTo('Talk');
 	}
 
 }

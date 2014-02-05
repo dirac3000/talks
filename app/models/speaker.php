@@ -2,9 +2,9 @@
 
 class Speaker extends Eloquent {
 
-	public function session()
+	public function talk()
 	{
-		return $this->belongsTo('Session');
+		return $this->belongsTo('Talk');
 	}
 
 	public function user()
