@@ -15,8 +15,8 @@ class CreateUsers extends Migration {
 		Schema::create('users', function($table) {
 			$table->increments('id');
 			$table->string('username', 64); /* this could actually be an LDAP id */
-			$table->string('password', 32)->nullable(); /* we won't use this if we use LDAP */
-			$table->string('email', 64)->nullable(); /* we won't use this if we use LDAP */
+			$table->string('password', 64)->nullable(); /* we won't use this if we use LDAP */
+			$table->string('email', 320)->nullable(); /* we won't use this if we use LDAP */
 			$table->enum('rights', 
 				array('admin', 'advanced', 'simple'))->default('simple');
 			$table->integer('manager_id')->unsigned()->nullable();

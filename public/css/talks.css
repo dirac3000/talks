@@ -1,0 +1,25 @@
+div.border {
+	border: 1px solid #205081;
+	padding: 28px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+    display: inline-block;
+}
+
+/* .input-group inside .border causes 100% width (some BS3 stuff) */
+@media(min-width: 768px){
+	div.border .input-group-addon, div.border .input-group-btn {
+		width: auto;
+	}
+}
+
+  .pull-center {
+      text-align: center;
+  }
+  .pull-center * {
+    text-align: left;
+  }
+  .pull-center button, .pull-center input[type=button] {
+  	text-align: center;
+  }

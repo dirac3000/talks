@@ -1,13 +1,39 @@
 <?php
 
-// Index page is a list of all posts
+/*
+IF YOU NEED TO DEBUG QUERIES 
 
+<script type="text/javascript">
+    var queries = {{ json_encode(DB::getQueryLog()) }};
+    console.log('/------------------------------ Database Queries ------------------------------/');
+    console.log(' ');
+    queries.forEach(function(query) {
+        console.log('   ' + query.time + ' | ' + query.query + ' | ' + query.bindings[0]);
+    });
+    console.log(' ');
+    console.log('/------------------------------ End Queries -----------------------------------/');
+</script>
+*/
+
+// Index page is a list of all talks
 Route::get('/', function() {
-	$descriptions = Description::where('status', '=', 'valid')->
-        order_by('updated_at', 'desc')->paginate(5);
+
+    $descriptions = Description::where('status','=','approved')->
+        where('date_start', '>=', new DateTime('today'))->
+        orderBy('updated_at', 'asc')->paginate(5);
+
     return View::make('home')
         ->with('descriptions', $descriptions);
 });
+
+// Talk description view
+Route::get('talk/{id}',  function($id) {
+
+    $description = Description::findOrFail($id);
+
+    return View::make('talk_view')
+            ->with('description', $description);
+}) ;
 
 
 // When a user is logged in he/she is taken to creating new post
@@ -110,19 +136,21 @@ Route::get('login', function() {
 });
 
 
-// Process the login form
+// Process the login
 Route::post('login', function() {
     // TODO: Rewrite login to use LDAP!
 	$userinfo = array(
         'username' => Input::get('username'),
         'password' => Input::get('password')
     );
-    if ( Auth::attempt($userinfo) )
+    $attempt = Auth::attempt($userinfo);
+    if ( $attempt )
     {
-        return Redirect::to('admin');
+        return Redirect::to('/');
     }
     else
     {
+        echo 'No good: '.$attempt;
         return Redirect::to('login')
             ->with('login_errors', true);
     }
@@ -132,7 +160,8 @@ Route::post('login', function() {
 // Process Logout process
 Route::get('logout', function() {
 	Auth::logout();
-    return Redirect::to('/');
+    return Redirect::to('/')
+        ->with('logout_message', true);
 });
 
 
