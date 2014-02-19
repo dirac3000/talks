@@ -12,3 +12,10 @@ $('.talks-table > tr[href]').click(function() {
     return false;
 });
 
+/* Datetime picker inputs */
+$(".form_datetime").datetimepicker({
+    format: 'yyyy-mm-dd hh:ii',
+    minuteStep : 15,
+    autoclose : true,
+});
+

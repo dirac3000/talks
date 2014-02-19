@@ -23,3 +23,8 @@ div.border {
   .pull-center button, .pull-center input[type=button] {
   	text-align: center;
   }
+
+textarea.textarea-short {
+  height: 70px;
+}
+
