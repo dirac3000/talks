@@ -6,9 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Talks Sessions Management">
     <meta name="author" content="Alvaro Moran">
+    @section('styles')
     {{ HTML::style('css/bootstrap.min.css') }}
+    {{ HTML::style('css/bootstrap-datetimepicker.min.css') }}
     {{ HTML::style('css/bootstrap-theme.min.css') }}
     {{ HTML::style('css/talks.css') }}
+    @show
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -37,7 +40,7 @@
           <ul class="nav navbar-nav">
             <li><a href="{{ URL::to('/') }}">Home</a></li>
               @if ( !Auth::guest() )
-              <li><a href="{{ URL::to('admin') }}">Create New</a></li>
+              <li><a href="{{ URL::to('talk_new') }}">Create New</a></li>
               @endif
           </ul>
         <ul class="nav navbar-nav navbar-right">
@@ -47,9 +50,11 @@
                 <span class="glyphicon glyphicon-user"></span> Login
               </a>
             @else
-            Welcome, <strong>{{ HTML::link('admin', Auth::user()->username) }} </strong> |
-                {{ HTML::link('logout', 'Logout') }}
+               {{ HTML::link('admin', 'Welcome, '. Auth::user()->username) }} 
+               </li><li>
+                {{ HTML::link('logout', 'Logout') }} 
             @endif
+            </li>
         </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -69,6 +74,7 @@
     <!-- Scripts are here so page loads faster -->
     {{ HTML::script('js/jquery-1.11.0.min.js') }}
     {{ HTML::script('js/bootstrap.min.js') }}
+    {{ HTML::script('js/bootstrap-datetimepicker.min.js') }}
     {{ HTML::script('js/talks.js') }}
     @show
 

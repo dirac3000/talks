@@ -4,131 +4,181 @@
 IF YOU NEED TO DEBUG QUERIES 
 
 <script type="text/javascript">
-    var queries = {{ json_encode(DB::getQueryLog()) }};
-    console.log('/------------------------------ Database Queries ------------------------------/');
-    console.log(' ');
-    queries.forEach(function(query) {
-        console.log('   ' + query.time + ' | ' + query.query + ' | ' + query.bindings[0]);
-    });
-    console.log(' ');
-    console.log('/------------------------------ End Queries -----------------------------------/');
+	var queries = {{ json_encode(DB::getQueryLog()) }};
+	console.log('/------------------------------ Database Queries ------------------------------/');
+	console.log(' ');
+	queries.forEach(function(query) {
+		console.log('   ' + query.time + ' | ' + query.query + ' | ' + query.bindings[0]);
+	});
+	console.log(' ');
+	console.log('/------------------------------ End Queries -----------------------------------/');
 </script>
 */
 
 // Index page is a list of all talks
 Route::get('/', function() {
 
-    $descriptions = Description::where('status','=','approved')->
-        where('date_start', '>=', new DateTime('today'))->
-        orderBy('updated_at', 'asc')->paginate(5);
+	$talks = Talk::where('status','=','approved')->
+		where('date_start', '>=', new DateTime('today'))->
+		orderBy('updated_at', 'asc')->paginate(5);
 
-    return View::make('home')
-        ->with('descriptions', $descriptions);
+	return View::make('home')
+		->with('talks', $talks);
 });
 
 // Talk description view
 Route::get('talk/{id}',  function($id) {
 
-    $description = Description::findOrFail($id);
+	$talk = Talk::findOrFail($id);
 
-    return View::make('talk_view')
-            ->with('description', $description);
+	$name_list = DB::select('select name from users 
+		inner join speakers on speakers.user_id = users.id
+		where speakers.talk_id = ?', array($talk->id));
+	$speaker_names = $name_list[0];
+	return View::make('talk_view')
+		->with('talk', $talk)
+		->with('speaker_names', $speaker_names);
 }) ;
 
 
 // When a user is logged in he/she is taken to creating new post
-Route::get('admin', array('before' => 'auth', 'do' => function() {
+Route::get('talk_new', array('before' => 'auth', 'do' => function() {
 	$user = Auth::user();
-    return View::make('new')->with('user', $user);
+	$talksUser = User::all();
+
+	$name_list = array();
+	foreach ($talksUser as $u) {
+		$name_list[$u->id] = $u->name;
+	}
+
+	return View::make('talk_new')->with('user', $user)->
+		with('name_list',$name_list);
 }));
 
 /**
 Route::get('post/(:num)', array('before' => 'auth', 'do' => function($id){
 
-    $user = Auth::user();
-    $view_post = Post::with('user')->find($id);
-    return View::make('edit')
-            ->with('user', $user)
-            ->with('post', $view_post);
+	$user = Auth::user();
+	$view_post = Post::with('user')->find($id);
+	return View::make('edit')
+			->with('user', $user)
+			->with('post', $view_post);
 })) ;
 
 Route::put('post/(:num)', array('before' => 'auth', 'do' => function($id){
-    
-    $post_title = Input::get('post_title');
-    $post_body = Input::get('post_body');
-    $post_author = Input::get('post_author');
-    $edit_post = array(
-        'post_title'    => $post_title,
-        'post_body'     => $post_body,
-        'post_author'   => $post_author
-    );
+	
+	$post_title = Input::get('post_title');
+	$post_body = Input::get('post_body');
+	$post_author = Input::get('post_author');
+	$edit_post = array(
+		'post_title'	=> $post_title,
+		'post_body'	 => $post_body,
+		'post_author'   => $post_author
+	);
    
-    $rules = array(
-        'post_title'     => 'required|min:3|max:255',
-        'post_body'      => 'required|min:10'
-    );
-    
-    $validation = Validator::make($edit_post, $rules);
-    if ( $validation -> fails() )
-    {
-        
-        return Redirect::to('post/'.$id)
-                ->with('user', Auth::user())
-                ->with_errors($validation)
-                ->with_input();
-    }
-    // save the post after passing validation
-    $post = Post::with('user')->find($id);
-    $post->post_title = $post_title;
-    $post->post_body = $post_body;
-    $post->post_author = $post_author;
-    $post->save();
-    // redirect to viewing all posts
-    return Redirect::to('/')->with('success_message', true);
+	$rules = array(
+		'post_title'	 => 'required|min:3|max:255',
+		'post_body'	  => 'required|min:10'
+	);
+	
+	$validation = Validator::make($edit_post, $rules);
+	if ( $validation -> fails() )
+	{
+		
+		return Redirect::to('post/'.$id)
+				->with('user', Auth::user())
+				->with_errors($validation)
+				->with_input();
+	}
+	// save the post after passing validation
+	$post = Post::with('user')->find($id);
+	$post->post_title = $post_title;
+	$post->post_body = $post_body;
+	$post->post_author = $post_author;
+	$post->save();
+	// redirect to viewing all posts
+	return Redirect::to('/')->with('success_message', true);
 
 })) ;
 
 
 Route::delete('post/(:num)', array('before' => 'auth', 'do' => function($id){
-    $delete_post = Post::with('user')->find($id);
-    $delete_post -> delete();
-    return Redirect::to('/')
-            ->with('success_message', true);
+	$delete_post = Post::with('user')->find($id);
+	$delete_post -> delete();
+	return Redirect::to('/')
+			->with('success_message', true);
 })) ;
 */
 
-/**
+
 
 // When the new post is submitted we handle that here
-Route::post('admin', array('before' => 'auth', 'do' => function() {
+Route::post('talk_new', array('before' => 'auth', 'do' => function() {
+	$user = User::findOrFail( Auth::user()->id);
+	if ($user->rights != 'admin') {
+		Session::flash('error', 'unauthorized');
+		Redirect::to('/');
+		die();
+	}
 
-    $new_post = array(
-        'post_title'    => Input::get('post_title'),
-        'post_body'     => Input::get('post_body'),
-        'post_author'   => Input::get('post_author')
-    );
-   
-    $rules = array(
-        'post_title'     => 'required|min:3|max:255',
-        'post_body'      => 'required|min:10'
-    );
-    
-    $validation = Validator::make($new_post, $rules);
-    if ( $validation -> fails() )
-    {
-        
-        return Redirect::to('admin')
-                ->with('user', Auth::user())
-                ->with_errors($validation)
-                ->with_input();
-    }
-    // create the new post after passing validation
-    $post = new Post($new_post);
-    $post->save();
-    // redirect to viewing all posts
-    return Redirect::to('/');
-}));
+	$new_talk = array(
+		'creator_id'	=> $user->id,	
+		'title'		=> Input::get('title'),
+		'target'	=> Input::get('target'),
+		'aim'		=> Input::get('aim'),
+		'requirements'	=> Input::get('reqs'),
+		'description'	=> Input::get('desc'),
+		'date_start'	=> Input::get('date_start'),
+		'date_end'	=> Input::get('date_end'),
+		'places'	=> Input::get('places'),
+		'location'	=> Input::get('location'),
+	);
+
+	
+
+	$rules = array(
+		'title'		=> 'required|min:3|max:255',
+		'speakers'	=> 'required|min:10',
+	);
+	/*
+	$validation = Validator::make($new_post, $rules);
+	if ( $validation -> fails() )
+	{
+		
+		return Redirect::to('admin')
+				->with('user', Auth::user())
+				->with_errors($validation)
+				->with_input();
+	}
+	*/
+/*
+	// create the new talk after passing validation
+	$talk = new Talk();
+	$talk->creator_id	= $user->id;	
+	$talk->title		= Input::get('title');
+	$talk->target		= Input::get('target');
+	$talk->aim		= Input::get('aim');
+	$talk->requirements	= Input::get('reqs');
+	$talk->description	= Input::get('desc');
+	$talk->date_start	= Input::get('date_start');
+	$talk->date_end		= Input::get('date_end');
+	$talk->places		= Input::get('places');
+	$talk->location		= Input::get('location');
+
+	$talk->save();
+	// now that we have the talk go on with the spakers
+	foreach (Input::get('speakers') as $speaker_id) {
+		$speaker = new Speaker();
+		$speaker->user_id = $speaker_id;
+		$speaker->talk_id = $talk->id;
+		$speaker->save();
+	}
 */
+	// redirect to viewing all posts
+	return Redirect::to('/');
+	//var_dump(Input::get('speakers'));
+}));
+
 
 // Present the user with login form
 Route::get('login', function() {
@@ -138,30 +188,30 @@ Route::get('login', function() {
 
 // Process the login
 Route::post('login', function() {
-    // TODO: Rewrite login to use LDAP!
+	// TODO: Rewrite login to use LDAP!
+	//var_dump(debug_backtrace());
 	$userinfo = array(
-        'username' => Input::get('username'),
-        'password' => Input::get('password')
-    );
-    $attempt = Auth::attempt($userinfo);
-    if ( $attempt )
-    {
-        return Redirect::to('/');
-    }
-    else
-    {
-        echo 'No good: '.$attempt;
-        return Redirect::to('login')
-            ->with('login_errors', true);
-    }
+		'username' => Input::get('username'),
+		'password' => Input::get('password')
+	);
+	$attempt = Auth::attempt($userinfo);
+	if ( $attempt )
+	{
+		return Redirect::to('/');
+	}
+	else
+	{
+		return Redirect::to('login')
+			->with('login_errors', true);
+	}
 });
 
 
 // Process Logout process
 Route::get('logout', function() {
 	Auth::logout();
-    return Redirect::to('/')
-        ->with('logout_message', true);
+	return Redirect::to('/')
+		->with('logout_message', true);
 });
 
 

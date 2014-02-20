@@ -39,9 +39,9 @@ class User extends Eloquent implements UserInterface {
         }
 
 
-	public function manager()
+	public function creator()
 	{
-		return $this->hasOne('User', 'manager', 'id');
+		return $this->hasOne('User', 'creator_id', 'id');
 	}
 
 	public function workers()
@@ -73,5 +73,6 @@ class User extends Eloquent implements UserInterface {
 	{
 		return $this->hasMany('Speaker');
 	}
+
 }
 ?>

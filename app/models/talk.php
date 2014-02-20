@@ -2,11 +2,6 @@
 
 class Talk extends Eloquent {
 
-	public function descriptions()
-	{
-		return $this->hasMany('Description');
-	}
-
 	public function reservations()
 	{
 		return $this->hasMany('Reservation');
@@ -27,9 +22,9 @@ class Talk extends Eloquent {
 		return $this->hasMany('attachments');
 	}
 
-	public function manager()
+	public function creator()
 	{
-		return $this->belongsTo('User','manager');
+		return $this->belongsTo('User', 'creator_id');
 	}
 
 }

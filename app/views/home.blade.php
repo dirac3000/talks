@@ -1,18 +1,34 @@
 @extends('templates.main')
 	
 @section('content')
-	<h1>Upcoming Talks</h1>
-	{{ Table::striped_bordered_hover_condensed_open() }}
+    @if (Session::has('logout_message'))
+    <div class="alert alert-info alert-dismissable">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+      Logout successful.
+    </div>
+    @endif
+   @if (Session::has('error'))
+    <div class="alert alert-danger alert-dismissable">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    @if (Session::get('error') == 'unauthorized') 
+        Unauthorized action.
+    @else
+        Unexpected error.
+    @endif
+    </div>
+    @endif
+	<h2>Upcoming Talks</h2>
+ 	{{ Table::striped_bordered_hover_condensed_open() }}
 	{{ Table::headers('Talk Name', 'Location', 'Date') }}
     <tbody class="talks-table">
-    @foreach ($descriptions as $descr)
-    <tr href="{{ URL::to('talk')}}/{{ $descr->id }}">
-        <td><a href="{{ URL::to('talk')}}/{{ $descr->id }}">{{ $descr->title }}</a></td>
-        <td>{{ $descr->location }}</td>
-        <td>{{ date('d/m/Y', strtotime($descr->date_start)) }}</td>
+    @foreach ($talks as $talk)
+    <tr href="{{ URL::to('talk')}}/{{ $talk->id }}">
+        <td><a href="{{ URL::to('talk')}}/{{ $talk->id }}">{{ $talk->title }}</a></td>
+        <td>{{ $talk->location }}</td>
+        <td>{{ date('d/m/Y', strtotime($talk->date_start)) }}</td>
     </tr>
     @endforeach
     <tbody>
-        {{ Table::close() }}
+    {{ Table::close() }}
 @stop
 
