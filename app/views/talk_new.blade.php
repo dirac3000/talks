@@ -63,7 +63,7 @@
         <p>{{ Form::label('location', 'Location') }}</p>
         {{ $errors->first('location', Alert::error(":message")) }}
         <p>{{ Form::text('location', Input::old('location')) }}</p>
-        <p>{{ Form::block_help('Confirm with your room reservation system before filling this information.') }}</p>
+        <p>{{ Form::block_help('Please confirm with your room reservation system before filling this information.') }}</p>
         </div>
        <!-- submit button -->
         <p class="pull-right">{{ Form::submit('Create', array('class' => 'btn-success')) }}</p>
