@@ -43,7 +43,8 @@ class AuthController extends BaseController {
 		Auth::logout();
 		return Redirect::to('/')
 			->with('logout_message', true);
-	}	
+	}
+
 }
 
 

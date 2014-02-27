@@ -73,6 +73,5 @@ class User extends Eloquent implements UserInterface {
 	{
 		return $this->hasMany('Speaker');
 	}
-
 }
 ?>

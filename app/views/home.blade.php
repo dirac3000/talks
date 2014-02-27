@@ -23,12 +23,26 @@
     <tbody class="talks-table">
     @foreach ($talks as $talk)
     <tr href="{{ URL::to('talk')}}/{{ $talk->id }}">
-        <td><a href="{{ URL::to('talk')}}/{{ $talk->id }}">{{ $talk->title }}</a></td>
+    <td><a href="{{ URL::to('talk')}}/{{ $talk->id }}">
+    @if ($admin_view)
+    @if ($talk->status == 'pending')
+    <span class="glyphicon glyphicon-edit"></span>
+    @else
+    <span class="glyphicon glyphicon-ok"></span>
+    @endif
+    @endif
+    	{{ $talk->title }}
+	</a>
+	</td>
         <td>{{ $talk->location }}</td>
         <td>{{ date('d/m/Y', strtotime($talk->date_start)) }}</td>
     </tr>
     @endforeach
     <tbody>
     {{ Table::close() }}
+    <div class='pull-right'>
+    	{{ $talks->links() }}
+    </div>
+
 @stop
 

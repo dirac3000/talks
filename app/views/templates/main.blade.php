@@ -39,22 +39,35 @@
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li><a href="{{ URL::to('/') }}">Home</a></li>
-              @if ( !Auth::guest() )
-              <li><a href="{{ URL::to('talk_new') }}">Create New</a></li>
+              @if ( $admin_view )
+              <li><a href="{{ URL::to('talk_new') }}">New Talk</a></li>
+              <li><a href="{{ URL::to('user_list') }}">Users</a></li>
+
               @endif
           </ul>
         <ul class="nav navbar-nav navbar-right">
-            <li>
             @if ( Auth::guest() )
-              <a href="{{ URL::to('login')}}">
+	    	<li>
+	    	<a href="{{ URL::to('login')}}">
                 <span class="glyphicon glyphicon-user"></span> Login
-              </a>
-            @else
-               {{ HTML::link('admin', 'Welcome, '. Auth::user()->username) }} 
-               </li><li>
-                {{ HTML::link('logout', 'Logout') }} 
+		</a>
+		</li>
+	    @else
+		    <li class="dropdown">
+		    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+		    <span class="glyphicon glyphicon-user"></span> {{ ucwords(strtolower(Auth::user()->name)) }}
+		    <b class="caret"></b></a>
+		<ul class="dropdown-menu">
+		<li></li>
+		<li>
+		    		    
+		{{ HTML::link(URL::to('user/'.Auth::user()->id), 'Profile') }} 		    
+		</li>
+		<li>
+		{{ HTML::link('logout', 'Logout') }} 
+		</li></ul>
+  	        </li>
             @endif
-            </li>
         </ul>
         </div><!--/.nav-collapse -->
       </div>

@@ -34,6 +34,14 @@ Route::get('talk_new',
 Route::post('talk_new', 
 	array('before' => 'auth', 'uses' => 'TalkController@processNewTalk'));
 
+// Reservation add
+Route::post('talk_res_add/{talk_id}', 
+	array('before' => 'auth', 'uses' => 'TalkController@addReservation'));
+
+// Reservation del
+Route::post('talk_res_del', 
+	array('before' => 'auth', 'uses' => 'TalkController@delReservation'));
+
 
 /*
  * LOGIN PART
@@ -48,6 +56,20 @@ Route::post('login', 'AuthController@postLogin');
 // Process Logout process
 Route::get('logout', 'AuthController@getLogout');
 
+
+/*
+ * USERS MANAGEMENT PART
+ */
+
+// list of all users
+Route::get('user_list', 
+	array('before' => 'auth', 'uses' => 'UserController@showList'));
+
+// User Edit
+Route::get('user/{id}', 'UserController@view');
+
+// User Rigths Change
+Route::get('user/{id}/rights={rights}', 'UserController@changeRights');
 
 
 /*

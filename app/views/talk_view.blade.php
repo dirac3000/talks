@@ -1,13 +1,12 @@
 @extends('templates.main')
 	
 @section('content')
-	<h2>{{ $talk->title }}
-	<br><small><em>
-	<!-- there might be a better way to show the array contents! -->
-	@foreach ($speaker_names as $name)
-	{{ $name }}, 
-	@endforeach
-	</em></small></h2>
+	<h2>{{ $talk->title }}</h2>
+    <div class="container">
+      <div class="col-md-8"> 
+	<h2><small><em>
+	{{  ucwords(strtolower(implode(', ', (array)$speaker_names))) }}
+	</em></small></h3>
 	<p class="lead">{{ $talk->aim }}</p>
 {{ Typography::horizontal_dl(
     array(
@@ -17,10 +16,59 @@
 
     "Date start"	=> $talk->date_start? $talk->date_start : "TBD",
     "Date end"		=> $talk->date_end? $talk->date_start : "TBD",
-    "Available places"	=> $talk->places? $talk->places : "TBD", // might want to change it later
+    "Available places"	=> $talk->places? 
+    	($talk->places - $confirmed).'/'.$talk->places : "TBD", 
     "Location"		=> $talk->location? $talk->location: "TBD",
     )
 )
 }}
+      </div>  
+    <div class="col-md-4">
+    <h4>Reservations</h4>
+    <ul>
+	<?php
+		$reserved = false;
+	?>
+	@if (count($reservations) == 0)
+		<li class="text-muted">None yet</li>
+	@else
+	{{ Form::open(array('url' => 'talk_res_del/')) }}
+	@foreach ($reservations as $res)
+	@if ($res->status == 'refused')
+	<li class="text-danger">
+	@elseif ($res->status == 'pending')
+	<li class="text-muted">
+	@else
+	<li>
+	@endif
+	{{ ucwords(strtolower($res->name)) }}
+	<?php
+		if (!Auth::guest() && (Auth::user()->id == $res->user_id))       
+		{
+			$reserved = true;
+			if ($res->status != 'refused') {	
+			?>
+			{{ Form::hidden('res_id', $res->id) }}
+			<button type="submit" class="btn btn-link btn-xs">
+			  <span class="glyphicon glyphicon-remove"></span> Cancel
+			</button>
+			<?php } 
+		}
+	?>
+	</li>
+	@endforeach
+	{{ Form::close() }}
+	@endif
+
+	</ul>
+@if ( !Auth::guest() && !$reserved  && (($talk->places - $confirmed) > 0))
+	{{ Form::open(array('url' => 'talk_res_add/'. $talk->id )) }}
+
+	<button type="submit" class='btn btn-sm btn-block'>Add reservation</button>
+	 {{ Form::close() }}
+@endif
+      </div>
+      </div>
+
 @stop
 

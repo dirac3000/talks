@@ -19,6 +19,7 @@ class CreateReservations extends Migration {
 			$table->foreign('user_id')->references('id')->on('users');
 			$table->enum('status',
 				array('approved', 'pending', 'refused'))->default('pending');
+			$table->text('comment')->nullable(); /* reason why the reservation had been refused */
 			$table->timestamps();
 
 		});
