@@ -35,15 +35,19 @@ class TalkController extends BaseController {
 			where speakers.talk_id = ?', array($talk->id));
 		$speaker_names = $name_list[0];
 
+		$user_id = (Auth::guest()? null : Auth::user()->id);
 		$resa = DB::select('select r.id as id, name, status, user_id
 			from reservations as r inner join users as u 
 			on r.user_id = u.id
 			where r.talk_id = ? 
-			order by status', array($talk->id));
+			and
+		       	(status != "refused" or u.id = ?)
+			order by status', array($talk->id, $user_id));
 		
 		$confirmed = DB::select('select count(id) as c
 			from reservations
-			where talk_id = ?', array($talk->id))[0]->c;
+			where talk_id = ?
+			and status = "approved"', array($talk->id))[0]->c;
 
 		return View::make('talk_view')
 			->with('talk', $talk)
@@ -98,15 +102,15 @@ class TalkController extends BaseController {
 		// create the new talk after passing validation
 		$talk = new Talk();
 		$talk->creator_id	= $user->id;	
-		$talk->title		= Input::get('title');
-		$talk->target		= Input::get('target');
-		$talk->aim		= Input::get('aim');
-		$talk->requirements	= Input::get('reqs');
-		$talk->description	= Input::get('desc');
+		$talk->title		= e(Input::get('title'));
+		$talk->target		= e(Input::get('target'));
+		$talk->aim		= e(Input::get('aim'));
+		$talk->requirements	= e(Input::get('reqs'));
+		$talk->description	= e(Input::get('desc'));
 		$talk->date_start	= Input::get('date_start');
 		$talk->date_end		= Input::get('date_end');
-		$talk->places		= Input::get('places');
-		$talk->location		= Input::get('location');
+		$talk->places		= e(Input::get('places'));
+		$talk->location		= e(Input::get('location'));
 	
 		$talk->save();
 		// now that we have the talk go on with the spakers
@@ -155,11 +159,56 @@ class TalkController extends BaseController {
 		$talk_id = $res->talk_id;
 
 		if ($res->user_id != Auth::user()->id)
-			;//return $this->unauthorized();
+			return $this->unauthorized();
 
 		/* Delete reservation */
 		$res->delete();
-			return Redirect::to('talk/'.$talk_id);
+	
+		return Redirect::to('talk/'.$talk_id);
+	}
+
+	/**
+	 * Edits reservation (status and comment)
+	 * @return Redirect
+	 */
+	public function editReservations($mgr_id)
+	{
+		if (Auth::user()->id != $mgr_id)
+			return $this->unauthorized();
+
+
+		$status = 	Input::get('status');
+		$comments =	Input::get('comment');
+		$res_ids =	array_keys($status);
+
+		$resa = Reservation::whereIn('id', $res_ids)->get();
+
+		$valid = true;
+		foreach($resa as $res) {
+			$res->status = $status[$res->id];
+			$res->comment = e($comments[$res->id]);
+			if ($res->status == 'refused' && $res->comment == '') {
+				$valid = false;
+				continue;
+			}
+			// save whatever is already valid
+			$res->save();
+		}
+		if (!$valid) {
+			Session::flash('reservation_errors', 
+				Lang::get('errors.needRefusalComment'));
+			return Redirect::to('user/'.$mgr_id);
+		}
+
+
+		$inputs= Input::all();
+
+		ob_start();
+		var_dump($inputs);
+		$result = ob_get_clean();
+
+		return Redirect::to('user/'.$mgr_id);
+
 	}
 
 }

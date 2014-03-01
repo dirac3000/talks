@@ -35,10 +35,46 @@ class UserController extends BaseController {
 			$manager = 
 				User::find($userToEdit->manager_id);
 		}
-	
+		
+		// if logged show team members reservations
+		$resa = null;
+		$mgr_resa = null;
+		if (Auth::user()) {
+			$user_id = Auth::user()->id;
+			if ($id == $user_id) {
+				$mgr_resa = DB::select('select 
+					r.id as id, user_id, name, title, 
+					r.status as status, date_start, 
+					talk_id, comment
+				from reservations as r inner join users as u 
+				on r.user_id = u.id
+				inner join talks as t 
+				on t.id = r.talk_id
+				where t.date_start > now()
+				and t.status ="approved"
+				and u.manager_id = ?
+				order by t.date_start', array($user_id));
+			}
+         
+         		$resa = DB::select('select 
+					title, r.status as status, 
+					date_start, talk_id, comment
+				from reservations as r
+				inner join talks as t
+				on t.id = r.talk_id
+				where t.date_start > now()
+				and t.status ="approved"
+				and user_id = ?
+				order by t.date_start', array($id));
+
+		}
+
 		return View::make('user')
 			->with('user', $userToEdit)
-			->with('manager', $manager);
+			->with('manager', $manager)
+			->with('reservations', $resa)
+			->with('mgr_reservations', $mgr_resa);
+
 	}
 
  	/**
@@ -58,75 +94,6 @@ class UserController extends BaseController {
 		return Redirect::to('/user/'.$id);	
 	}
 
- 	/**
-	 * Show talk creation form
-	 * @return View
-	 */
-	public function createTalk()
-	{
-		$user = Auth::user();
-		$talksUser = User::all();
-	
-		$name_list = array();
-		foreach ($talksUser as $u) {
-			$name_list[$u->id] = $u->name;
-		}
-	
-		return View::make('talk_new')->with('user', $user)->
-			with('name_list',$name_list);
-	}
-
- 	/**
-	 * Process new talk input and creates it
-	 * @return Redirect
-	 */
-	public function processNewTalk()
-	{
-		if (!$this->loggedAdmin()) {
-			Session::flash('error', 'unauthorized');
-			return Redirect::to('/');
-		}
-	
-		$new_talk = array(
-			'creator_id'	=> Auth::user()->id,	
-			'title'		=> Input::get('title'),
-			'target'	=> Input::get('target'),
-			'aim'		=> Input::get('aim'),
-			'requirements'	=> Input::get('reqs'),
-			'description'	=> Input::get('desc'),
-			'date_start'	=> Input::get('date_start'),
-			'date_end'	=> Input::get('date_end'),
-			'places'	=> Input::get('places'),
-			'location'	=> Input::get('location'),
-		);
-		
-		// TODO: Add validation here!
-		
-		// create the new talk after passing validation
-		$talk = new Talk();
-		$talk->creator_id	= $user->id;	
-		$talk->title		= Input::get('title');
-		$talk->target		= Input::get('target');
-		$talk->aim		= Input::get('aim');
-		$talk->requirements	= Input::get('reqs');
-		$talk->description	= Input::get('desc');
-		$talk->date_start	= Input::get('date_start');
-		$talk->date_end		= Input::get('date_end');
-		$talk->places		= Input::get('places');
-		$talk->location		= Input::get('location');
-	
-		$talk->save();
-		// now that we have the talk go on with the spakers
-		foreach (Input::get('speakers') as $speaker_id) {
-			$speaker = new Speaker();
-			$speaker->user_id = $speaker_id;
-			$speaker->talk_id = $talk->id;
-			$speaker->save();
-		}
-	
-		// redirect to viewing all posts
-		return Redirect::to('/');
-	}
 
 }
 

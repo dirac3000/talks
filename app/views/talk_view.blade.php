@@ -35,13 +35,13 @@
 	{{ Form::open(array('url' => 'talk_res_del/')) }}
 	@foreach ($reservations as $res)
 	@if ($res->status == 'refused')
-	<li class="text-danger">
+	<li class="text-danger" style="text-decoration:line-through;">
 	@elseif ($res->status == 'pending')
-	<li class="text-muted">
+	<li class="text-muted" style="font-style:italic">
 	@else
 	<li>
 	@endif
-	{{ ucwords(strtolower($res->name)) }}
+	<a href="{{ URL::to('user/'.$res->user_id) }}">{{ ucwords(strtolower($res->name)) }}</a>
 	<?php
 		if (!Auth::guest() && (Auth::user()->id == $res->user_id))       
 		{

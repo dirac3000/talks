@@ -42,6 +42,10 @@ Route::post('talk_res_add/{talk_id}',
 Route::post('talk_res_del', 
 	array('before' => 'auth', 'uses' => 'TalkController@delReservation'));
 
+// Reservation Management (related to user)
+Route::post('res_mgr/{mgr_id}', 
+	array('before' => 'auth', 'uses' => 'TalkController@editReservations'));
+
 
 /*
  * LOGIN PART
