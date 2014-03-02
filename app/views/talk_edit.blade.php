@@ -45,7 +45,8 @@
         <p>{{ Form::label('desc', 'Description') }}</p>
         {{ $errors->first('desc', Alert::error(":message")) }}
         <p>{{ Form::textarea('desc', Input::old('desc', $talk->description)) }}</p>
-        <!-- date start field -->
+	<div>
+	<!-- date start field -->
         <div class="col-md-6">
         <p>{{ Form::label('date_start', 'Date Start') }}</p>
         {{ $errors->first('date_start', Alert::error(":message")) }}
@@ -71,7 +72,8 @@
         {{ $errors->first('location', Alert::error(":message")) }}
         <p>{{ Form::text('location', Input::old('location', $talk->location)) }}</p>
         <p>{{ Form::block_help('Please confirm with your room reservation system before filling this information.') }}</p>
-        </div>
+	</div>
+	</div>
        <!-- submit button -->
         <p class="pull-right">{{ Form::submit('Save', array('class' => 'btn-success')) }}</p>
         </div>

@@ -166,22 +166,32 @@ class TalkController extends BaseController {
 	 */
 	public function processTalk()
 	{
-	
-		$new_talk = array(
-			'creator_id'	=> Auth::user()->id,	
-			'title'		=> Input::get('title'),
-			'target'	=> Input::get('target'),
-			'aim'		=> Input::get('aim'),
-			'requirements'	=> Input::get('reqs'),
-			'description'	=> Input::get('desc'),
-			'date_start'	=> Input::get('date_start'),
-			'date_end'	=> Input::get('date_end'),
-			'places'	=> Input::get('places'),
-			'location'	=> Input::get('location'),
+		// Form validation
+		$before_end =	strtotime(Input::get('date_end'))?
+			'|before:'.Input::get('date_end') : '';
+		$after_start =	strtotime(Input::get('date_start'))?
+			'|after:'.Input::get('date_start') : '';
+		$rules = array(
+			'talk_id'	=> 'numeric',
+			'title'		=> 'required|max:255',
+			'speakers'	=> 'required',
+			'target'	=> 'min:3',
+			'aim'		=> 'required',
+			'reqs'		=> 'min:3',
+			'desc'		=> 'min:3',
+			'date_start'	=> 
+				'date'.$before_end,
+			'date_end'	=> 
+				'date'.$after_start,
+			'places'	=> 'numeric',
 		);
-		
-		// TODO: Add validation here!
-		
+		$validator = Validator::make(
+			Input::all(),
+			$rules);
+		if ($validator->fails())
+			return Redirect::back()->withInput()
+				->withErrors($validator);
+
 		// get new or edited talk and validate rights
 		$talk_id = (Input::get('talk_id'));
 		if ($talk_id != null) {
@@ -205,7 +215,7 @@ class TalkController extends BaseController {
 		$talk->date_end		= Input::get('date_end');
 		$talk->places		= e(Input::get('places'));
 		$talk->location		= e(Input::get('location'));
-	
+
 		// Do the database changes within a transaction
 		DB::transaction(function($talk) use ($talk)
 		{
