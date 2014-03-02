@@ -7,7 +7,12 @@ return array(
 	/* Titles and text elements */
 	'upcomingTalks' =>	'Upcoming',
 	'pastTalks' =>		'Past',
+	
 	'upcomingTalksTitle' =>	'Upcoming Talks',
 	'pastTalksTitle' =>	'Past Talks',
+	'newTalkTitle' =>	'Creating New Talk',
+	'editTalkTitle' =>	'Edit Talk',
+
+
 );
 

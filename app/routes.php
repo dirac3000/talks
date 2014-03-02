@@ -37,9 +37,13 @@ Route::get('talk/{id}', 'TalkController@viewTalk');
 Route::get('talk_new', 
 	array('before' => 'auth', 'uses' => 'TalkController@createTalk'));
 
+// Edit talk form
+Route::get('talk_edit/{id}', 
+	array('before' => 'auth', 'uses' => 'TalkController@editTalk'));
+
 // When the new post is submitted we handle that here
-Route::post('talk_new', 
-	array('before' => 'auth', 'uses' => 'TalkController@processNewTalk'));
+Route::post('talk_save', 
+	array('before' => 'auth', 'uses' => 'TalkController@processTalk'));
 
 // Reservation add
 Route::post('talk_res_add/{id}', 

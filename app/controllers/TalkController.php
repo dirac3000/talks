@@ -2,6 +2,24 @@
  
 class TalkController extends BaseController {
 
+	/*
+	 * Resolve type of rights on this talk 
+	 * @return String (admin, speaker, null)
+	 */
+	protected function talkRights($talk_id)
+	{
+		$talk_rights = null;
+		if ($this->loggedAdmin())
+			$talk_rights = 'admin';
+		else if (!Auth::guest()) {
+			$speaker = Speaker::where('user_id', Auth::user())
+				->where('talk_id', $talk_id);
+			if ($speaker)
+				$talk_rights = 'speaker';
+		}
+		return $talk_rights;
+	}
+
 	/**
 	 * Display a talks list with a given time condition
 	 * @return View
@@ -51,16 +69,8 @@ class TalkController extends BaseController {
 	{
 		$talk = Talk::findOrFail($id);
 	
-		// Determine what level of rights the visito has on this talk
-		$talk_rights = null;
-		if ($this->loggedAdmin())
-			$talk_rights = 'admin';
-		else if (!Auth::guest()) {
-			$speaker = Speaker::where('user_id', Auth::user())
-				->where('talk_id', $id);
-			if ($speaker)
-				$talk_rights = 'speaker';
-		}
+		// Determine what level of rights the visitor has on this talk
+		$talk_rights = $this->talkRights($id);
 		if ($talk_rights == null && $talk->status != 'approved')
 			return $this->unauthorized(); 
 
@@ -68,7 +78,9 @@ class TalkController extends BaseController {
 		$name_list = DB::select('select name from users 
 			inner join speakers on speakers.user_id = users.id
 			where speakers.talk_id = ?', array($talk->id));
-		$speaker_names = $name_list[0];
+		$speaker_names = array();
+		foreach ($name_list as $spk)
+			$speaker_names[] = $spk->name;
 
 		$user_id = (Auth::guest()? null : Auth::user()->id);
 		$resa = DB::select('select r.id as id, name, status, user_id
@@ -93,10 +105,10 @@ class TalkController extends BaseController {
 	}
 
  	/**
-	 * Show talk creation form
+	 * Show talk creation or edit form
 	 * @return View
 	 */
-	public function createTalk()
+	public function editTalkForm($talk)
 	{
 		$user = Auth::user();
 		$talksUser = User::all();
@@ -105,20 +117,55 @@ class TalkController extends BaseController {
 		foreach ($talksUser as $u) {
 			$name_list[$u->id] = $u->name;
 		}
-	
-		return View::make('talk_new')->with('user', $user)->
-			with('name_list',$name_list);
+
+		return View::make('talk_edit')->with('user', $user)
+			->with('name_list',$name_list)
+			->with('talk', $talk);
+	}
+
+ 	/**
+	 * Prepare creation form
+	 * @return View
+	 */
+	public function createTalk()
+	{
+		$talk = new Talk();
+		return $this->editTalkForm($talk)->
+			with('title', trans('messages.newTalkTitle'))
+			->with('talk_rights', null);
+	}
+
+ 	/**
+	 * Show talk edit form
+	 * @return View
+	 */
+	public function editTalk($talk_id)
+	{
+		$talk_rights = $this->talkRights($talk_id);
+		if ($talk_rights == null)
+			return $this->unauthorized();
+		$talk = Talk::findOrFail($talk_id);
+		
+		// get speakers name as array
+		$speakers = $talk->speakers()
+			->get();
+		$speakers_list = array();
+		foreach ($speakers as $spk)
+			$speakers_list[] = $spk->user_id;
+
+		return $this->editTalkForm($talk)
+			->with('title', trans('messages.editTalkTitle'))
+			->with('speakers_list', $speakers_list)
+			->with('talk_rights', $talk_rights);
+			
 	}
 
  	/**
 	 * Process new talk input and creates it
 	 * @return Redirect
 	 */
-	public function processNewTalk()
+	public function processTalk()
 	{
-		if (!$this->loggedAdmin()) {
-			return $this->unauthorized();
-		}
 	
 		$new_talk = array(
 			'creator_id'	=> Auth::user()->id,	
@@ -135,9 +182,20 @@ class TalkController extends BaseController {
 		
 		// TODO: Add validation here!
 		
-		// create the new talk after passing validation
-		$talk = new Talk();
-		$talk->creator_id	= $user->id;	
+		// get new or edited talk and validate rights
+		$talk_id = (Input::get('talk_id'));
+		if ($talk_id != null) {
+			$talk = Talk::findOrFail($talk_id);
+		}
+		else {
+			$talk = new Talk();
+			$talk->creator_id = Auth::user()->id;	
+		}
+		// Verify rights on this talk 
+		if ($this->talkRights($talk_id) == null) {
+			return $this->unauthorized();
+		}
+
 		$talk->title		= e(Input::get('title'));
 		$talk->target		= e(Input::get('target'));
 		$talk->aim		= e(Input::get('aim'));
@@ -148,17 +206,25 @@ class TalkController extends BaseController {
 		$talk->places		= e(Input::get('places'));
 		$talk->location		= e(Input::get('location'));
 	
-		$talk->save();
-		// now that we have the talk go on with the spakers
-		foreach (Input::get('speakers') as $speaker_id) {
-			$speaker = new Speaker();
-			$speaker->user_id = $speaker_id;
-			$speaker->talk_id = $talk->id;
-			$speaker->save();
-		}
-	
-		// redirect to viewing all posts
-		return Redirect::to('/');
+		// Do the database changes within a transaction
+		DB::transaction(function($talk) use ($talk)
+		{
+			$talk->save();
+			// We do it the easiest way: we delete all speakers
+			// and then add them again.
+			$talk->speakers()->delete();
+			// Add speakers
+			foreach (Input::get('speakers') as $speaker_id) {
+				$speaker = new Speaker();
+				$speaker->user_id = $speaker_id;
+				$speaker->talk_id = $talk->id;
+				$speaker->save();
+			}
+		});
+		DB::commit();
+
+		// redirect to view saved post
+		return Redirect::to('talk/' . $talk->id);
 	}
 
  	/**
