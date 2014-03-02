@@ -26,6 +26,12 @@ class Talk extends Eloquent {
 	{
 		return $this->belongsTo('User', 'creator_id');
 	}
+
+	public function future()
+	{
+		return (new DateTime($this->date_start)) 
+			> (new DateTime("today"));
+	}
 }
 
 ?>

@@ -10,12 +10,12 @@ class TalkController extends BaseController {
 	{
 		if ($this->loggedAdmin()) {
 			$talks = Talk::where('date_start', $condition, new DateTime('today'))->
-				orderBy('updated_at', 'asc')->paginate(20);
+				orderBy('date_start', 'asc')->paginate(20);
 		}
 		else {
 			$talks = Talk::where('status','=','approved')->
-				where('date_start', '>=', new DateTime('today'))->
-				orderBy('updated_at', 'asc')->paginate(20);
+				where('date_start', $condition, new DateTime('today'))->
+				orderBy('date_start', 'asc')->paginate(20);
 		}
 
 		return View::make('talk_list')

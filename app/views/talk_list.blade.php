@@ -23,6 +23,8 @@
     @if ($admin_view)
     @if ($talk->status == 'pending')
     <span class="glyphicon glyphicon-edit"></span>
+    @elseif ($talk->status == 'cancelled')
+    <span class="glyphicon glyphicon-ban-circle"></span>
     @else
     <span class="glyphicon glyphicon-ok"></span>
     @endif

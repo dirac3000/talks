@@ -92,7 +92,8 @@
 	@endif
 	<a href="{{ URL::to('user/'.$res->user_id) }}">{{ ucwords(strtolower($res->name)) }}</a>
 	<?php
-		if (!Auth::guest() && (Auth::user()->id == $res->user_id))       
+		if (!Auth::guest() && (Auth::user()->id == $res->user_id)
+			&& $talk->future() )       
 		{
 			$reserved = true;
 			if ($res->status != 'refused') {	
@@ -110,17 +111,15 @@
 	@endif
 
 	</ul>
-@if ( ($talk->status == "approved") && !Auth::guest() && !$reserved  && (($talk->places - $confirmed) > 0))
+@if ( ($talk->status == "approved") && !Auth::guest() && !$reserved  && (($talk->places - $confirmed) > 0) && $talk->future())
 	{{ Form::open(array('url' => 'talk_res_add/'. $talk->id )) }}
 
 	<button type="submit" class='btn btn-sm btn-block'>Add reservation</button>
 	 {{ Form::close() }}
 @endif
 </div>
-
 @endif
       </div>
-
 @stop
 
 
