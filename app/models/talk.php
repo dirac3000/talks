@@ -12,21 +12,20 @@ class Talk extends Eloquent {
 		return $this->hasMany('Speaker');
 	}
 
-	public function commentss()
+	public function comments()
 	{
 		return $this->hasMany('Comment');
 	}
 
 	public function attachments()
 	{
-		return $this->hasMany('attachments');
+		return $this->hasMany('Attachment');
 	}
 
 	public function creator()
 	{
 		return $this->belongsTo('User', 'creator_id');
 	}
-
 }
 
 ?>

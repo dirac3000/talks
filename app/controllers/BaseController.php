@@ -8,7 +8,8 @@ class BaseController extends Controller {
 	 */
 	protected function unauthorized()
 	{
-		Session::flash('error', 'unauthorized');
+		$message = Lang::get('errors.unauthorized');
+		Session::flash('error', $message);
 		return Redirect::to('/');
 	}
 

@@ -3,13 +3,13 @@
 class TalkController extends BaseController {
 
 	/**
-	 * Display the talks list
+	 * Display a talks list with a given time condition
 	 * @return View
 	 */
-	public function getTalks()
+	protected function getTalks($condition)
 	{
 		if ($this->loggedAdmin()) {
-			$talks = Talk::where('date_start', '>=', new DateTime('today'))->
+			$talks = Talk::where('date_start', $condition, new DateTime('today'))->
 				orderBy('updated_at', 'asc')->paginate(20);
 		}
 		else {
@@ -18,8 +18,29 @@ class TalkController extends BaseController {
 				orderBy('updated_at', 'asc')->paginate(20);
 		}
 
-		return View::make('home')
+		return View::make('talk_list')
 			->with('talks', $talks);
+	}
+
+	/**
+	 * Display upcoming talks list
+	 * @return View
+	 */
+	public function pastTalks()
+	{
+		return $this->getTalks('<=')
+			->with('title', trans('messages.pastTalksTitle'));
+	}
+
+
+	/**
+	 * Display past talks list
+	 * @return View
+	 */
+	public function futureTalks()
+	{
+		return $this->getTalks('>=')
+			->with('title', trans('messages.upcomingTalksTitle'));
 	}
 
  	/**
@@ -30,6 +51,20 @@ class TalkController extends BaseController {
 	{
 		$talk = Talk::findOrFail($id);
 	
+		// Determine what level of rights the visito has on this talk
+		$talk_rights = null;
+		if ($this->loggedAdmin())
+			$talk_rights = 'admin';
+		else if (!Auth::guest()) {
+			$speaker = Speaker::where('user_id', Auth::user())
+				->where('talk_id', $id);
+			if ($speaker)
+				$talk_rights = 'speaker';
+		}
+		if ($talk_rights == null && $talk->status != 'approved')
+			return $this->unauthorized(); 
+
+		// get speakers name as array
 		$name_list = DB::select('select name from users 
 			inner join speakers on speakers.user_id = users.id
 			where speakers.talk_id = ?', array($talk->id));
@@ -43,7 +78,7 @@ class TalkController extends BaseController {
 			and
 		       	(status != "refused" or u.id = ?)
 			order by status', array($talk->id, $user_id));
-		
+
 		$confirmed = DB::select('select count(id) as c
 			from reservations
 			where talk_id = ?
@@ -53,7 +88,8 @@ class TalkController extends BaseController {
 			->with('talk', $talk)
 			->with('speaker_names', $speaker_names)
 			->with('reservations', $resa)
-			->with('confirmed', $confirmed);
+			->with('confirmed', $confirmed)
+			->with('talk_rights', $talk_rights);
 	}
 
  	/**
@@ -211,6 +247,53 @@ class TalkController extends BaseController {
 
 	}
 
+	/**
+	 * change talk status
+	 * @return Redirect
+	 */
+	public function changeStatus($talk_id)
+	{
+		if (!$this->loggedAdmin()) {
+			return $this->unauthorized();
+		}
+
+		$talk = Talk::findOrFail($talk_id);
+		$status = Input::get('talk_status');
+		if (!in_array($status, 
+			array('pending', 'approved', 'cancelled')))
+			return $this->unauthorized();
+		// status validation already in route pattern
+		$talk->status = $status;
+
+		$talk->save();
+
+		// get back to the talk view
+		return Redirect::to('talk/'.$talk_id);
+	}
+
+	/**
+	 * delete a talk
+	 * @return Redirect
+	 */
+	public function deleteTalk($talk_id)
+	{
+		if (!$this->loggedAdmin()) {
+			return $this->unauthorized();
+		}
+		$talk = Talk::findOrFail($talk_id);
+		$title = $talk->title;
+		
+		DB::transaction(function($talk) use ($talk)
+		{
+			$talk->delete();	
+		});
+		DB::commit();
+		// get back to the talk list
+		$message = Lang::get('messages.talkDeleted', 
+			array('title' => $title));
+		return Redirect::to('/')
+			->with('message',$message);
+	}
 }
 
 

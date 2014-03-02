@@ -14,11 +14,15 @@ class CreateReservations extends Migration {
 		Schema::create('reservations', function($table) {
 			$table->increments('id');
 			$table->integer('talk_id')->unsigned();
-			$table->foreign('talk_id')->references('id')->on('talks');
+			$table->foreign('talk_id')->references('id')
+				->on('talks')
+				->onDelete('cascade');;
 			$table->integer('user_id')->unsigned();
-			$table->foreign('user_id')->references('id')->on('users');
+			$table->foreign('user_id')->references('id')
+				->on('users');
 			$table->enum('status',
-				array('approved', 'pending', 'refused'))->default('pending');
+				array('approved', 'pending', 'refused'))
+				->default('pending');
 			$table->text('comment')->nullable(); /* reason why the reservation had been refused */
 			$table->timestamps();
 

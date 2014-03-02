@@ -16,12 +16,19 @@ IF YOU NEED TO DEBUG QUERIES
 */
 
 /*
+ * GLOBAL PATTERNS
+ */
+Route::pattern('id', '[0-9]+');
+
+/*
  * TALKS ROUTES
  */
 
-// Index page is a list of all talks
-Route::get('/', 'TalkController@getTalks');
+// Index page is a list of upcoming talks
+Route::get('/', 'TalkController@futureTalks');
 
+// List of past talks
+Route::get('past', 'TalkController@pastTalks');
 
 // Talk description view
 Route::get('talk/{id}', 'TalkController@viewTalk');
@@ -35,7 +42,7 @@ Route::post('talk_new',
 	array('before' => 'auth', 'uses' => 'TalkController@processNewTalk'));
 
 // Reservation add
-Route::post('talk_res_add/{talk_id}', 
+Route::post('talk_res_add/{id}', 
 	array('before' => 'auth', 'uses' => 'TalkController@addReservation'));
 
 // Reservation del
@@ -43,8 +50,16 @@ Route::post('talk_res_del',
 	array('before' => 'auth', 'uses' => 'TalkController@delReservation'));
 
 // Reservation Management (related to user)
-Route::post('res_mgr/{mgr_id}', 
+Route::post('res_mgr/{id}', 
 	array('before' => 'auth', 'uses' => 'TalkController@editReservations'));
+
+// Change Talk status
+Route::post('talk_status/{id}', 
+	array('before' => 'auth', 'uses' => 'TalkController@changeStatus'));
+
+// Delete a Talk
+Route::delete('talk_delete/{id}', 
+	array('before' => 'auth', 'uses' => 'TalkController@deleteTalk'));
 
 
 /*

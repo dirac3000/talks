@@ -14,9 +14,11 @@ class CreateSpeakers extends Migration {
 		Schema::create('speakers', function($table) {
 			$table->increments('id');
 			$table->integer('talk_id')->unsigned();
-			$table->foreign('talk_id')->references('id')->on('talks');
+			$table->foreign('talk_id')->references('id')
+				->on('talks')->onDelete('cascade');
 			$table->integer('user_id')->unsigned();
-			$table->foreign('user_id')->references('id')->on('users');
+			$table->foreign('user_id')->references('id')
+				->on('users');
 			$table->timestamps();			
 		});
 	}

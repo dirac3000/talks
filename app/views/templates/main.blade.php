@@ -38,7 +38,8 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li><a href="{{ URL::to('/') }}">Home</a></li>
+            <li><a href="{{ URL::to('/') }}">{{ trans('messages.upcomingTalks') }}</a></li>
+            <li><a href="{{ URL::to('past') }}">{{ trans('messages.pastTalks') }}</a></li>
               @if ( $admin_view )
               <li><a href="{{ URL::to('talk_new') }}">New Talk</a></li>
               <li><a href="{{ URL::to('user_list') }}">Users</a></li>
