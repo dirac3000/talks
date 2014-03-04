@@ -60,7 +60,7 @@
 <div class="col-md-8"> 
 	<h2><small><em>
 	{{  ucwords(strtolower(implode(', ', (array)$speaker_names))) }}
-	</em></small></h3>
+	</em></small></h2>
 	<p class="lead">{{ $talk->aim }}</p>
 {{ Typography::horizontal_dl(
     array(

@@ -81,6 +81,10 @@ Route::post('talk_status/{id}',
 Route::delete('talk_delete/{id}', 
 	array('before' => 'auth', 'uses' => 'TalkController@deleteTalk'));
 
+// Get Attendance Sheet
+Route::get('talk_attendance/{id}', 
+	array('uses' => 'TalkController@attendance'));
+
 
 /*
  * LOGIN PART

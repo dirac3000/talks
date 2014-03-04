@@ -62,6 +62,44 @@ class TalkController extends BaseController {
 	}
 
  	/**
+	 * Display attendance sheet for a given talk
+	 * (This is a light version of the talk view)
+	 * @return View
+	 */	
+	public function attendance($id)
+	{
+		$talk = Talk::findOrFail($id);
+	
+		// Determine what level of rights the visitor has on this talk
+		$talk_rights = $this->talkRights($id);
+		if ($talk_rights == null && $talk->status != 'approved')
+			return $this->unauthorized(); 
+
+		// get speakers name as array
+		$name_list = DB::select('select name from users 
+			inner join speakers on speakers.user_id = users.id
+			where speakers.talk_id = ?', array($talk->id));
+		$speaker_names = array();
+		foreach ($name_list as $spk)
+			$speaker_names[] = $spk->name;
+
+		$user_id = (Auth::guest()? null : Auth::user()->id);
+		$resa = DB::select('select r.id as id, name, status, user_id
+			from reservations as r inner join users as u 
+			on r.user_id = u.id
+			where r.talk_id = ? 
+			and
+		       	status = "approved"
+			order by status', array($talk->id));
+
+
+		return View::make('talk_attendance')
+			->with('talk', $talk)
+			->with('speaker_names', $speaker_names)
+			->with('reservations', $resa);
+	}
+
+	/**
 	 * Display one talk with description
 	 * @return View
 	 */	

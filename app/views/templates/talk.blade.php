@@ -12,19 +12,17 @@
 @yield('talk_nav_settings')
 @if ($talk_rights != null)
 <ul class="nav nav-tabs">
-@if ($tab_selected == 'view')
-  <li class="active"><a href="#">{{ trans('messages.talkView') }}</a></li>
-  <li><a href="{{ URL::to('talk_edit/'.$talk->id) }}">{{ trans('messages.talkEdit') }}</a></li>
-  <li><a href="{{ URL::to('talk_attach/'.$talk->id) }}">{{ trans('messages.talkAttach') }}</a></li>
-@elseif ($tab_selected == 'edit')
-  <li><a href="{{ URL::to('talk/'.$talk->id) }}">{{ trans('messages.talkView') }}</a></li>
-  <li class="active"><a href="#">{{ trans('messages.talkEdit') }}</a></li>
-  <li><a href="{{ URL::to('talk_attach/'.$talk->id) }}">{{ trans('messages.talkAttach') }}</a></li>
-@elseif ($tab_selected == 'attach')
-  <li><a href="{{ URL::to('talk/'.$talk->id) }}">{{ trans('messages.talkView') }}</a></li>
-  <li><a href="{{ URL::to('talk_edit/'.$talk->id) }}">{{ trans('messages.talkEdit') }}</a></li>
-  <li class="active"><a href="#">{{ trans('messages.talkAttach') }}</a></li>
-@endif
+
+<li {{  ($tab_selected == 'view')? 'class="active"' : '' }}>
+{{  ($tab_selected == 'view')? '<a href="#">' : '<a href="'. URL::to('talk/'.$talk->id) .'">' }}
+{{ trans('messages.talkView') }}</a></li>
+<li {{  ($tab_selected == 'edit')? 'class="active"' : '' }}>
+{{  ($tab_selected == 'edit')? '<a href="#">' : '<a href="'. URL::to('talk_edit/'.$talk->id) .'">' }}
+{{ trans('messages.talkEdit') }}</a></li>
+<li {{  ($tab_selected == 'attach')? 'class="active"' : '' }}>
+{{  ($tab_selected == 'attach')? '<a href="#">' : '<a href="'. URL::to('talk_attach/'.$talk->id) .'">' }}
+{{ trans('messages.talkAttach') }}</a></li>
+
 
 @if ($talk_rights == 'admin')
   <li><a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="#">
@@ -46,6 +44,9 @@
 	<button type="submit" class="btn btn-link ">{{ trans('messages.talkActCancel') }}</butfon>
  	{{ Form::close() }}
 	</li>
+@endif
+@if ($talk->status == 'approved')
+	<li><button class="btn btn-link"><a href="{{ URL::to('talk_attendance/'.$talk->id) }}"  target="_blank">{{ trans('messages.talkActAttendance') }}</a></button></li>
 @endif
 	<li role="presentation" class="divider"></li>
 	<li>

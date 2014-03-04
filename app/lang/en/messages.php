@@ -83,6 +83,11 @@ return array(
 	'usersName' =>		'Name',
 	'usersRights' =>	'Rights',
 
+	/* Attendance sheet view */
+	'attAttendance' =>	'Attendance Sheet',
+	'attNames' =>		'Names',
+	'attSignatures' =>	'Signatures',
+
 	/* main template */
 	'mainTitle' =>		'Talks',
 	'mainTalks' =>		'Talks',
@@ -102,6 +107,7 @@ return array(
 	'talkAttach' =>		'Add File',
 	'talkActions' =>	'Actions',
 	'talkActCancel' =>	'Cancel',
+	'talkActAttendance' =>	'Attendance Sheet',
 	'talkActConfirm' =>	'Confirm',
 	'talkActDelete' =>	'Delete',
 	'talkConfirmMsg' =>	'Are you sure you want to confirm this talk?'
