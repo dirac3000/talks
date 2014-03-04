@@ -6,8 +6,8 @@ return array(
 	'attachmentDeleted' =>	'Attachment deleted.',
 
 	/* Titles and text elements */
-	'upcomingTalks' =>	'Upcoming',
-	'pastTalks' =>		'Past',
+	'upcomingTalksTitle' =>	'Upcoming Talks',
+	'pastTalksTitle' =>	'Past Talks',
 
 	/* Login View */
 	'loginUsername' =>	'Username',
@@ -24,14 +24,14 @@ return array(
 
 	/* Talk edit view */
 	'editFormTitle'	=>	'Title',
-	'editFormSpeaker' =>	'Speakers',
+	'editFormSpeakers' =>	'Speakers',
 	'editFormTarget' =>	'Target',
 	'editFormAim' =>	'Aim',
 	'editFormReqs' =>	'Requirements',
 	'editFormDesc' =>	'Description',
 	'editFormDateStart' =>	'Date start',
 	'editFormDateEnd' =>	'Date end',
-	'editFormPlaces' =>	'Number of available places',
+	'editFormPlaces' =>	'Available places',
 	'editFormLocation' =>	'Location',
 	'editFormLocationH' =>	'Please confirm with your room reservation system before filling this information.',
 	'editFormSave' =>	'Save',
@@ -44,8 +44,8 @@ return array(
 	'viewTBD' =>		'To Be Defined',
 	'viewNA' =>		'Not Available',
 	'viewAttachments' =>	'Attachments',
-	'viewAttMakePrivate' =>	'MakePrivate',
-	'viewAttMakePublic' =>	'MakePublic',
+	'viewAttMakePrivate' =>	'Make Private',
+	'viewAttMakePublic' =>	'Make Public',
 	'viewAttRemove' =>	'Remove',
 
 	/* User View */
@@ -57,9 +57,9 @@ return array(
 	/* The following are translations for DB enums */
 	'userRights_simple' =>	'Simple',
 	'userRights_advanced' => 'Advanced',
-	'userRights_admini' =>	'Administrator',
+	'userRights_admin' =>	'Administrator',
 	'userRightsMkAdmin' =>	'Change to administrator',
-	'userRightsMkSimpl' =>	'Change to simple',
+	'userRightsMkSimple' =>	'Change to simple',
 	'userReservations' =>	'Reservations',
 	'userResPending' =>	'Awaiting Approval',
 	'userResConfirmed' =>	'Confirmed',
@@ -91,8 +91,8 @@ return array(
 	'mainLogin' =>		'Login',
 	'mainProfile' =>	'Profile',
 	'mainLogout' =>		'Logout',
-	'mainUpcoming' =>	'Upcoming Talks',
-	'mainPast' =>		'Past Talks',
+	'mainUpcoming' =>	'Upcoming',
+	'mainPast' =>		'Past',
 
 	/* talk template */
 	'talkPending' =>	'Awaiting Confirmation',

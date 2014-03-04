@@ -4,7 +4,7 @@
 	<h2>{{ ucwords(strtolower($user->name)) }}</h2>
 
 <dl class="dl-horizontal">
-	<dt>{{ trans('messages.user') }}</dt><dd>{{ $user->username? htmlentities($user->username) : trans('messages.viewNA') }}</dd>
+	<dt>{{ trans('messages.userUsername') }}</dt><dd>{{ $user->username? htmlentities($user->username) : trans('messages.viewNA') }}</dd>
 	<dt>{{ trans('messages.userEmail') }}</dt><dd>{{ $user->email ? $user->email : trans('messages.viewNA') }}</dd>
 	<dt>{{ trans('messages.userManager') }}</dt><dd>
 	@if ($manager)
@@ -36,11 +36,11 @@
 <td>{{ $res->date_start }}</td>
 <td>
 @if ($res->status == 'pending')
-<span class="text-warning">{{ trans('messages.userPending') }}
+<span class="text-warning">{{ trans('messages.userResPending') }}
 @elseif ($res->status == 'approved')
-<span class="text-success">{{ trans('messages.userConfirmed') }}
+<span class="text-success">{{ trans('messages.userResConfirmed') }}
 @else
-<span class="text-danger"><strong>{{ trans('messages.userPending') }}</strong>
+<span class="text-danger"><strong>{{ trans('messages.userResPending') }}</strong>
 @endif
 @if ($res->comment != '')
 : {{ $res->comment }}
@@ -54,7 +54,7 @@
 
 
 @if ($mgr_reservations)
-<h4>{{ trans('messages.userTeamRes }}</h4>
+<h4>{{ trans('messages.userTeamRes') }}</h4>
 {{ Form::open(array('url' => 'res_mgr/'.$user->id)) }}
 
 {{ Table::open() }}
@@ -68,7 +68,7 @@
 <td>
 <select name="status[{{ $res->id }}]" class="form-control input-sm">
 <option value="pending" {{ $res->status == 'pending'? 'selected' : '' }} >{{ trans('messages.userTResPending') }}</option>
-<option value="approved" {{ $res->status == 'approved'? 'selected' : '' }} >{{ trans('trans('messages.userTResConfirmed') }}</option>
+<option value="approved" {{ $res->status == 'approved'? 'selected' : '' }} >{{ trans('messages.userTResConfirmed') }}</option>
 <option value="refused" {{ $res->status == 'refused'? 'selected' : '' }} >{{ trans('messages.userTResRefused') }}</option>
 </select>
 </td>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8">
     <title>{{ trans('messages.mainTitle') }}</title>
@@ -42,7 +42,7 @@
             <li><a href="{{ URL::to('past') }}">{{ trans('messages.mainPast') }}</a></li>
               @if ( $admin_view )
               <li><a href="{{ URL::to('talk_new') }}">{{ trans('messages.mainNewTalk') }}</a></li>
-              <li><a href="{{ URL::to('user_list') }}">trans('messages.mainUsers')</a></li>
+              <li><a href="{{ URL::to('user_list') }}">{{ trans('messages.mainUsers') }}</a></li>
 
               @endif
           </ul>

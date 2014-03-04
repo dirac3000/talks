@@ -15,15 +15,15 @@
 @if ($tab_selected == 'view')
   <li class="active"><a href="#">{{ trans('messages.talkView') }}</a></li>
   <li><a href="{{ URL::to('talk_edit/'.$talk->id) }}">{{ trans('messages.talkEdit') }}</a></li>
-  <li><a href="{{ URL::to('talk_attach/'.$talk->id) }}">{{ trans('messages.talkAdd') }}</a></li>
+  <li><a href="{{ URL::to('talk_attach/'.$talk->id) }}">{{ trans('messages.talkAttach') }}</a></li>
 @elseif ($tab_selected == 'edit')
   <li><a href="{{ URL::to('talk/'.$talk->id) }}">{{ trans('messages.talkView') }}</a></li>
   <li class="active"><a href="#">{{ trans('messages.talkEdit') }}</a></li>
-  <li><a href="{{ URL::to('talk_attach/'.$talk->id) }}">{{ trans('messages.talkAdd') }}</a></li>
+  <li><a href="{{ URL::to('talk_attach/'.$talk->id) }}">{{ trans('messages.talkAttach') }}</a></li>
 @elseif ($tab_selected == 'attach')
   <li><a href="{{ URL::to('talk/'.$talk->id) }}">{{ trans('messages.talkView') }}</a></li>
   <li><a href="{{ URL::to('talk_edit/'.$talk->id) }}">{{ trans('messages.talkEdit') }}</a></li>
-  <li class="active"><a href="#">{{ trans('messages.talkAdd') }}</a></li>
+  <li class="active"><a href="#">{{ trans('messages.talkAttach') }}</a></li>
 @endif
 
 @if ($talk_rights == 'admin')
@@ -71,10 +71,10 @@
 		return confirm("{{ trans('messages.talkConfirmMsg') }}");
 	});
 	$('#cancel_talk').submit(function(){
-		return confirm("{{ trans('messages.talkConfirmMsg') }}");
+		return confirm("{{ trans('messages.talkCancelMsg') }}");
 	});
 	$('#delete_talk').submit(function(){
-		return confirm("{{ trans('messages.talkConfirmMsg') }}");
+		return confirm("{{ trans('messages.talkDeleteMsg') }}");
 	});
     </script>
 @endif
