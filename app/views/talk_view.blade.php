@@ -7,7 +7,7 @@
 @section('talk_main')
 
 <div class="container">
-@if ($talk->status == 'approved')
+@if ($talk->status == 'approved' || $talk_rights != null)
     <div class="col-md-4 pull-right">
     <h4>Reservations</h4>
     <ul>
