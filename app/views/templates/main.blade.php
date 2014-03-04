@@ -78,6 +78,18 @@
     @section('main')
     <div class="container">
           <div>
+    @if (Session::has('message'))
+    <div class="alert alert-info alert-dismissable">
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    {{ Session::get('message') }}
+    </div>
+    @endif
+   @if (Session::has('error'))
+    <div class="alert alert-danger alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    {{ Session::get('error') }}
+    </div>
+    @endif
           @yield('content')
           </div>
           @yield('pagination')

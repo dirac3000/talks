@@ -12,7 +12,24 @@ class UserController extends BaseController {
 			Session::flash('error', 'unauthorized');
 			return Redirect::to('/');
 		}
-		$users = User::orderBy('name','asc')->paginate(20);
+		$search = Input::get('search');
+		$users = null;
+		if ($search == null)
+			$users = User::orderBy('name','asc')->paginate(20);
+		else {
+			$input = Input::all();
+			$rules = array( 
+				'search' => 'alpha',
+	        	);
+			$validation = Validator::make($input, $rules);
+			if ($validation->fails())
+			{
+				return Redirect::back()->withInput()
+					->withErrors($validation);
+			}
+			$users = User::where('name','like', "%$search%")
+				->orderBy('name','asc')->paginate(20);
+		}
 		return View::make('user_list')
 			->with('users', $users);
 	}

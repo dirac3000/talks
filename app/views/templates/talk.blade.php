@@ -15,9 +15,15 @@
 @if ($tab_selected == 'view')
   <li class="active"><a href="#">View</a></li>
   <li><a href="{{ URL::to('talk_edit/'.$talk->id) }}">Edit</a></li>
+  <li><a href="{{ URL::to('talk_attach/'.$talk->id) }}">Add File</a></li>
 @elseif ($tab_selected == 'edit')
   <li><a href="{{ URL::to('talk/'.$talk->id) }}">View</a></li>
   <li class="active"><a href="#">Edit</a></li>
+  <li><a href="{{ URL::to('talk_attach/'.$talk->id) }}">Add File</a></li>
+@elseif ($tab_selected == 'attach')
+  <li><a href="{{ URL::to('talk/'.$talk->id) }}">View</a></li>
+  <li><a href="{{ URL::to('talk_edit/'.$talk->id) }}">Edit</a></li>
+  <li class="active"><a href="#">Add File</a></li>
 @endif
 
 @if ($talk_rights == 'admin')

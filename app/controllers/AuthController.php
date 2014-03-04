@@ -41,7 +41,7 @@ class AuthController extends BaseController {
 	public function getLogout()
 	{
 		Auth::logout();
-		return Redirect::to('/')
+		return Redirect::back()
 			->with('message', 
 			Lang::get('messages.logoutMessage'));
 	}

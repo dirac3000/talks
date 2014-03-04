@@ -96,12 +96,20 @@ class TalkController extends BaseController {
 			where talk_id = ?
 			and status = "approved"', array($talk->id))[0]->c;
 
+		$attachments = null;
+		if ($talk_rights != null)
+			$attachments = $talk->attachments()->get();
+		else
+			$attachments = $talk->attachments()
+				->where('privacy','public')->get();
+
 		return View::make('talk_view')
 			->with('talk', $talk)
 			->with('speaker_names', $speaker_names)
 			->with('reservations', $resa)
 			->with('confirmed', $confirmed)
-			->with('talk_rights', $talk_rights);
+			->with('talk_rights', $talk_rights)
+			->with('attachments', $attachments);
 	}
 
  	/**
@@ -369,6 +377,112 @@ class TalkController extends BaseController {
 			array('title' => $title));
 		return Redirect::to('/')
 			->with('message',$message);
+	}
+
+	/**
+	 * show talk's upload attachment form
+	 * @return View
+	 */
+	public function attachTalk($talk_id)
+	{
+		$talk_rights = $this->talkRights($talk_id);
+		if ($talk_rights == null)
+			return $this->unauthorized();
+		$talk = Talk::findOrFail($talk_id);
+
+
+		return View::make('talk_attach')
+			->with('talk_rights',$talk_rights)
+			->with('talk', $talk);
+	}
+
+	/**
+	 * show talk's upload attachment form
+	 * @return Redirect
+	 */
+	public function uploadAttachment($talk_id)
+	{
+		$talk_rights = $this->talkRights($talk_id);
+		if ($talk_rights == null)
+			return $this->unauthorized();
+
+		$input = Input::all();
+		$rules = array( 
+			'attachment' => 'max:50000000',
+			'visibility' => 'in:public,private'
+        	);
+		$validation = Validator::make($input, $rules);
+		if ($validation->fails())
+		{
+			return Redirect::back()->withInput()
+				->withErrors($validator);
+		}
+
+		$file = Input::file('attachment');
+		$destinationPath = 'public/uploads/'.$talk_id.'/'.str_random(8);
+		$filename = $file->getClientOriginalName();
+		//$filename = $file['name'];
+		$uploadSuccess = $file->move($destinationPath, $filename);
+
+		if ($uploadSuccess == false) {
+			return Redirect::back()->withInput()
+				->with('error', trans('uploadError'));
+		}
+
+		$att = new Attachment();
+		$att->talk_id =	$talk_id;
+		$att->user_id =	Auth::user()->id;
+		$att->path =	$destinationPath . '/' . $filename;
+		$att->privacy =	Input::get('visibility');
+
+		$att->save();
+		// get back to the talk view
+		return Redirect::to('talk/'.$talk_id);
+	}
+
+
+	/**
+	 * change attachment privacy
+	 * @return Redirect
+	 */
+	public function setAttachmentPrivacy($att_id)
+	{
+		$att = Attachment::findOrFail($att_id);
+		$talk_id = $att->talk_id;
+		$privacy = Input::get('privacy');
+		$talk_rights = $this->talkRights($talk_id);
+		if ($talk_rights == null ||
+			!in_array($privacy, array('public', 'private')))
+			return $this->unauthorized();
+		
+		$att->privacy = $privacy;
+		$att->save();
+		return Redirect::to('talk/'.$talk_id);
+
+	}
+
+	/**
+	 * delete attachment
+	 * @return Redirect
+	 */
+	public function deleteAttachment($att_id)
+	{
+		$att = Attachment::findOrFail($att_id);
+		$talk_id = $att->talk_id;
+		$talk_rights = $this->talkRights($talk_id);
+		if ($talk_rights == null)
+			return $this->unauthorized();
+		$path = $att->path;
+		// remove from db
+		$att->delete();
+		// remove file
+		File::delete($path);
+		// remove parent directory (it was a random name)
+		rmdir(dirname($path));
+
+		return Redirect::to('talk/'.$talk_id)
+			->with('message', trans('messages.attachmentDeleted'));
+
 	}
 }
 

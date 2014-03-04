@@ -45,6 +45,22 @@ Route::get('talk_edit/{id}',
 Route::post('talk_save', 
 	array('before' => 'auth', 'uses' => 'TalkController@processTalk'));
 
+// Upload attachment form
+Route::get('talk_attach/{id}', 
+	array('before' => 'auth', 'uses' => 'TalkController@attachTalk'));
+
+// Upload attachment
+Route::post('talk_attach/{id}', 
+	array('before' => 'auth', 'uses' => 'TalkController@uploadAttachment'));
+
+// Change Talk attachment privacy
+Route::post('talk_attach/{id}/privacy', 
+	array('before' => 'auth', 'uses' => 'TalkController@setAttachmentPrivacy'));
+
+// Delete attachment
+Route::delete('talk_attach/{id}', 
+	array('before' => 'auth', 'uses' => 'TalkController@deleteAttachment'));
+
 // Reservation add
 Route::post('talk_res_add/{id}', 
 	array('before' => 'auth', 'uses' => 'TalkController@addReservation'));
@@ -93,6 +109,8 @@ Route::get('user/{id}', 'UserController@view');
 
 // User Rigths Change
 Route::get('user/{id}/rights={rights}', 'UserController@changeRights');
+
+
 
 
 /*

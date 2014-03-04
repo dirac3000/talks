@@ -3,6 +3,7 @@
 return array(
 	'logoutMessage' =>	'Logout successful.',
 	'talkDeleted' => 	'Talk ":title" deleted.',
+	'attachmentDeleted' =>	'Attachment deleted.',
 
 	/* Titles and text elements */
 	'upcomingTalks' =>	'Upcoming',

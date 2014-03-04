@@ -28,3 +28,7 @@ textarea.textarea-short {
   height: 70px;
 }
 
+.table-nonfluid {
+   width: auto;
+}
+
