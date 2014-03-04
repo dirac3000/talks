@@ -9,16 +9,16 @@
         )) }}
         <!-- check for login errors flash var -->
         @if (Session::has('login_errors'))
-            {{ Alert::error("Username or password incorrect.") }}
+            {{ Alert::error(trans('errors.loginError')) }}
         @endif
         <!-- username field -->
-        <p>{{ Form::label('username', 'Username') }}</p>
+        <p>{{ Form::label('username', trans('messages.loginUsername')) }}</p>
         <p>{{ Form::text('username') }}</p>
         <!-- password field -->
-        <p>{{ Form::label('password', 'Password') }}</p>
+        <p>{{ Form::label('password', trans('messages.loginPassword')) }}</p>
         <p>{{ Form::password('password') }}</p>
         <!-- submit button -->
-        <p>{{ Form::submit('Login', array('class' => 'btn btn-lg btn-primary btn-block')) }}</p>
+        <p>{{ Form::submit(trans('messages.loginLogin'), array('class' => 'btn btn-lg btn-primary btn-block')) }}</p>
     {{ Form::close() }}
     </div>
     </div>

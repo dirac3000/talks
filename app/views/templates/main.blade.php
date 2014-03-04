@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Talks</title>
+    <title>{{ trans('messages.mainTitle') }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Talks Sessions Management">
     <meta name="author" content="Alvaro Moran">
@@ -34,15 +34,15 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="{{ URL::to('/') }}">Talks</a>
+          <a class="navbar-brand" href="{{ URL::to('/') }}">{{ trans('messages.mainTalks') }}</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li><a href="{{ URL::to('/') }}">{{ trans('messages.upcomingTalks') }}</a></li>
-            <li><a href="{{ URL::to('past') }}">{{ trans('messages.pastTalks') }}</a></li>
+            <li><a href="{{ URL::to('/') }}">{{ trans('messages.mainUpcoming') }}</a></li>
+            <li><a href="{{ URL::to('past') }}">{{ trans('messages.mainPast') }}</a></li>
               @if ( $admin_view )
-              <li><a href="{{ URL::to('talk_new') }}">New Talk</a></li>
-              <li><a href="{{ URL::to('user_list') }}">Users</a></li>
+              <li><a href="{{ URL::to('talk_new') }}">{{ trans('messages.mainNewTalk') }}</a></li>
+              <li><a href="{{ URL::to('user_list') }}">trans('messages.mainUsers')</a></li>
 
               @endif
           </ul>
@@ -50,7 +50,7 @@
             @if ( Auth::guest() )
 	    	<li>
 	    	<a href="{{ URL::to('login')}}">
-                <span class="glyphicon glyphicon-user"></span> Login
+                <span class="glyphicon glyphicon-user"></span> {{ trans('messages.mainLogin') }}
 		</a>
 		</li>
 	    @else
@@ -62,10 +62,10 @@
 		<li></li>
 		<li>
 		    		    
-		{{ HTML::link(URL::to('user/'.Auth::user()->id), 'Profile') }} 		    
+		{{ HTML::link(URL::to('user/'.Auth::user()->id), trans('messages.mainProfile')) }} 		    
 		</li>
 		<li>
-		{{ HTML::link('logout', 'Logout') }} 
+		{{ HTML::link('logout', trans('messages.mainLogout')) }} 
 		</li></ul>
   	        </li>
             @endif

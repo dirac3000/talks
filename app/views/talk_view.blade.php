@@ -9,13 +9,13 @@
 <div class="container">
 @if ($talk->status == 'approved' || $talk_rights != null)
     <div class="col-md-4 pull-right">
-    <h4>Reservations</h4>
+    <h4>{{ trans('messages.viewReservations') }}</h4>
     <ul>
 	<?php
 		$reserved = false;
 	?>
 	@if (count($reservations) == 0)
-		<li class="text-muted">None yet</li>
+		<li class="text-muted">{{ trans('messages.viewResNone') }}</li>
 	@else
 	{{ Form::open(array('url' => 'talk_res_del/')) }}
 	@foreach ($reservations as $res)
@@ -36,7 +36,7 @@
 			?>
 			{{ Form::hidden('res_id', $res->id) }}
 			<button type="submit" class="btn btn-link btn-xs">
-			  <span class="glyphicon glyphicon-remove"></span> Cancel
+			  <span class="glyphicon glyphicon-remove"></span> {{ trans('messages.viewResCancel') }}
 			</button>
 			<?php } 
 		}
@@ -50,7 +50,7 @@
 @if ( ($talk->status == "approved") && !Auth::guest() && !$reserved  && (($talk->places - $confirmed) > 0) && $talk->future())
 	{{ Form::open(array('url' => 'talk_res_add/'. $talk->id )) }}
 
-	<button type="submit" class='btn btn-sm btn-block'>Add reservation</button>
+	<button type="submit" class='btn btn-sm btn-block'>{{ trans('messages.viewResAdd') }}</button>
 	 {{ Form::close() }}
 @endif
 </div>
@@ -64,15 +64,15 @@
 	<p class="lead">{{ $talk->aim }}</p>
 {{ Typography::horizontal_dl(
     array(
-    "Target" 		=> $talk->target? $talk->target : "Not defined yet",
-    "Requirements"	=> $talk->requirements? $talk->requirements : "None",
-    "Description" 	=> $talk->description? $talk->description: "Not available",
+    trans('messages.editFormTarget')	=> $talk->target? $talk->target : trans('messages.viewTBD'),
+    trans('messages.editFormReqs')	=> $talk->requirements? $talk->requirements : trans('messages.viewTBD'),
+    trans('messages.editFormDesc') 	=> $talk->description? $talk->description: trans('messages.viewNA'),
 
-    "Date start"	=> $talk->date_start? $talk->date_start : "TBD",
-    "Date end"		=> $talk->date_end? $talk->date_start : "TBD",
-    "Available places"	=> $talk->places? 
-    	($talk->places - $confirmed).'/'.$talk->places : "TBD", 
-    "Location"		=> $talk->location? $talk->location: "TBD",
+    trans('messages.editFormDateStart')	=> $talk->date_start? $talk->date_start : trans('messages.viewTBD'),
+    trans('messages.editFormDateEnd')		=> $talk->date_end? $talk->date_start : trans('messages.viewTBD'),
+    trans('messages.editFormPlaces')	=> $talk->places? 
+    	($talk->places - $confirmed).'/'.$talk->places : trans('messages.viewTBD'), 
+    trans('messages.editFormLocation')	=> $talk->location? $talk->location: trans('messages.viewTBD'),
     )
 )
 }}
@@ -84,7 +84,7 @@ function human_filesize($bytes, $decimals = 2) {
 }
 ?>
 @if (!$attachments->isEmpty())
-<h4>Attachments</h4>
+<h4>{{ trans('messages.viewAttachments') }}</h4>
 <table class="table table-nonfluid">
 @foreach ($attachments as $att)
    <tr><td>
@@ -103,9 +103,9 @@ function human_filesize($bytes, $decimals = 2) {
 		($att->privacy == 'public')? 'private':'public') }}
 	<button type="submit" class="btn btn-link btn-xs">
 	@if ($att->privacy == 'public') 
-	<span class="glyphicon glyphicon-eye-open"></span> Make Private
+	<span class="glyphicon glyphicon-eye-close"></span> {{ trans('messages.viewAttMakePrivate') }}
 	@else
-	<span class="glyphicon glyphicon-eye-close"></span> Make Public
+	<span class="glyphicon glyphicon-eye-open"></span> {{ trans('messages.viewAttMakePublic') }}
 	@endif
 	</button>
    {{ Form::close() }}
@@ -114,7 +114,7 @@ function human_filesize($bytes, $decimals = 2) {
    {{ Form::open(array('url' => 'talk_attach/'.$att->id, 'method' => 'delete')) }}
 	{{ Form::hidden('talk_id', $talk->id) }}
 	<button type="submit" class="btn btn-link btn-xs">
-	<span class="glyphicon glyphicon-remove"></span> Remove
+	<span class="glyphicon glyphicon-remove"></span> {{ trans('messages.viewAttRemove') }}
 	</button>
    {{ Form::close() }}
    </td>

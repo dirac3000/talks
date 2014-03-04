@@ -8,7 +8,7 @@
 
 <div>
 <h2></h2>
-<p>Upload a file to attach to this talk.</p>
+<p>{{ trans('messages.attachWelcome') }}</p>
 {{ Form::open(array(
 	'url' => 'talk_attach/'.$talk->id, 
 	'enctype' => 'multipart/form-data', 
@@ -22,20 +22,20 @@
 	
 <input id="uploadFilename" placeholder="" disabled="disabled" class="form-control"/>
 	<div class="fileUpload btn btn-default">
-	<span><span class="glyphicon glyphicon-folder-open"></span> Browse...</span>
+	<span><span class="glyphicon glyphicon-folder-open"></span> {{ trans('messages.attachBrowse') }}</span>
 	{{ Form::file('attachment', array('id' => 'attachment', 'class' => 'upload')) }}
 	</div>
 
-<button type="submit" class='btn btn-success '><span class="glyphicon glyphicon-cloud-upload"></span> Upload</button>
+<button type="submit" class='btn btn-success '><span class="glyphicon glyphicon-cloud-upload"></span> {{ trans('messages.attachUpload') }}</button>
 <p>
-Visibility: 
+{{ trans('messages.attachVisibility') }}: 
  <label class="radio radio-inline">
     <input type="radio" name="visibility" id="visibilityPublic" value="public" checked>
-    Public
+    {{ trans('messages.attachPublic') }}
   </label>
   <label class="radio radio-inline">
     <input type="radio" name="visibility" id="visibilityPrivate" value="private">
-    Private
+    {{ trans('messages.attachPrivate') }}
   </label>
 <p>
 
