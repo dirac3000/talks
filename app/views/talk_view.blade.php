@@ -61,21 +61,24 @@
 	<h2><small><em>
 	{{  ucwords(strtolower(implode(', ', (array)$speaker_names))) }}
 	</em></small></h2>
-	<p class="lead">{{ $talk->aim }}</p>
-{{ Typography::horizontal_dl(
-    array(
-    trans('messages.editFormTarget')	=> $talk->target? $talk->target : trans('messages.viewTBD'),
-    trans('messages.editFormReqs')	=> $talk->requirements? $talk->requirements : trans('messages.viewTBD'),
-    trans('messages.editFormDesc') 	=> $talk->description? $talk->description: trans('messages.viewNA'),
-
-    trans('messages.editFormDateStart')	=> $talk->date_start? $talk->date_start : trans('messages.viewTBD'),
-    trans('messages.editFormDateEnd')		=> $talk->date_end? $talk->date_start : trans('messages.viewTBD'),
-    trans('messages.editFormPlaces')	=> $talk->places? 
-    	($talk->places - $confirmed).'/'.$talk->places : trans('messages.viewTBD'), 
-    trans('messages.editFormLocation')	=> $talk->location? $talk->location: trans('messages.viewTBD'),
-    )
-)
-}}
+	<p class="lead">{{ nl2br($talk->aim) }}</p>
+	<dl class="dl-horizontal">
+	<dt>{{ trans('messages.editFormTarget') }}</dt>
+	<dd>{{ $talk->target? nl2br($talk->target) : trans('messages.viewTBD') }}</dd>
+	<dt>{{ trans('messages.editFormReqs') }}</dt>
+	<dd>{{ $talk->requirements? nl2br($talk->requirements) : trans('messages.viewTBD') }}</dd>
+	<dt>{{ trans('messages.editFormDesc') }}</dt>
+	<dd>{{ $talk->description? nl2br($talk->description) : trans('messages.viewNA') }}</dd>
+	<dt>{{ trans('messages.editFormDateStart') }}</dt>
+	<dd>{{ $talk->date_end? $talk->date_start : trans('messages.viewTBD') }}</dd>
+	<dt>{{ trans('messages.editFormDateEnd') }}</dt>
+	<dd>{{ $talk->date_end? $talk->date_end : trans('messages.viewTBD') }}</dd>
+	<dt>{{ trans('messages.editFormPlaces') }}</dt>
+	<dd>{{ $talk->places? 
+    	($talk->places - $confirmed).'/'.$talk->places : trans('messages.viewTBD') }}</dd>
+	<dt>{{ trans('messages.editFormLocation') }}</dt>
+	<dd>{{ $talk->location? $talk->location : trans('messages.viewTBD') }}</dd>
+	</dl>
 <?php
 function human_filesize($bytes, $decimals = 2) {
   $sz = 'BKMGTP';
