@@ -16,7 +16,7 @@ class CreateAttachments extends Migration {
 			$table->string('path', 500); 
 			$table->integer('talk_id')->unsigned();
 			$table->foreign('talk_id')->references('id')
-				->on('talks');->onDelete('cascade');
+				->on('talks')->onDelete('cascade');
 			$table->integer('user_id')->unsigned();
 			$table->foreign('user_id')->references('id')->on('users');
 			$table->enum('privacy', 
