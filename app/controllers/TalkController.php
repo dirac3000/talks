@@ -446,14 +446,14 @@ class TalkController extends BaseController {
 
 		$input = Input::all();
 		$rules = array( 
-			'attachment' => 'max:50000000',
-			'visibility' => 'in:public,private'
+			'attachment' => 'required|max:50000000',
+			'visibility' => 'required|in:public,private'
         	);
 		$validation = Validator::make($input, $rules);
 		if ($validation->fails())
 		{
 			return Redirect::back()->withInput()
-				->withErrors($validator);
+				->withErrors($validation);
 		}
 
 		$file = Input::file('attachment');
