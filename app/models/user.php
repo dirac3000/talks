@@ -39,14 +39,14 @@ class User extends Eloquent implements UserInterface {
         }
 
 
-	public function creator()
+	public function manager()
 	{
-		return $this->hasOne('User', 'creator_id', 'id');
+		return $this->hasOne('User', 'id', 'manager_id');
 	}
 
 	public function workers()
 	{
-		return $this->hasMany('User', 'manager');
+		return $this->hasMany('User', 'manager_id');
 	}
 
 	public function attachments()

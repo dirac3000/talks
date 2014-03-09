@@ -47,7 +47,7 @@
 	@endif
 
 	</ul>
-@if ( ($talk->status == "approved") && !Auth::guest() && !$reserved  && (($talk->places - $confirmed) > 0) && $talk->future())
+@if ( ($talk->status == "approved") && ($talk_rights != 'speaker') && !Auth::guest() && !$reserved  && (($talk->places - $confirmed) > 0) && $talk->future())
 	{{ Form::open(array('url' => 'talk_res_add/'. $talk->id )) }}
 
 	<button type="submit" class='btn btn-sm btn-block'>{{ trans('messages.viewResAdd') }}</button>
@@ -91,7 +91,7 @@ function human_filesize($bytes, $decimals = 2) {
 <table class="table table-nonfluid">
 @foreach ($attachments as $att)
    <tr><td>
-   <a href="{{ URL::to($att->path) }}">
+   <a target="_blank" href="{{ URL::to($att->path) }}">
    <span class="glyphicon glyphicon-file"></span> 
    <strong>{{ basename($att->path) }}</strong></a>
    <small>{{ human_filesize(filesize($att->path)) }}</small>

@@ -12,10 +12,11 @@ class TalkController extends BaseController {
 		if ($this->loggedAdmin())
 			$talk_rights = 'admin';
 		else if (!Auth::guest()) {
-			$speaker = Speaker::where('user_id', Auth::user())
-				->where('talk_id', $talk_id);
-			if ($speaker)
+			$speaker = Speaker::where('user_id', Auth::user()->id)
+				->where('talk_id', $talk_id)->first();
+			if (!empty($speaker)) {
 				$talk_rights = 'speaker';
+			}
 		}
 		return $talk_rights;
 	}
@@ -157,7 +158,7 @@ class TalkController extends BaseController {
 	public function editTalkForm($talk)
 	{
 		$user = Auth::user();
-		$talksUser = User::all();
+		$talksUser = User::orderBy('name')->get();
 	
 		$name_list = array();
 		foreach ($talksUser as $u) {
@@ -221,10 +222,10 @@ class TalkController extends BaseController {
 			'talk_id'	=> 'numeric',
 			'title'		=> 'required|max:255',
 			'speakers'	=> 'required',
-			'target'	=> 'min:3',
+			'target'	=> 'min:10',
 			'aim'		=> 'required',
-			'reqs'		=> 'min:3',
-			'desc'		=> 'min:3',
+			'reqs'		=> 'min:10',
+			'desc'		=> 'min:10',
 			'date_start'	=> 
 				'date'.$before_end,
 			'date_end'	=> 
@@ -278,6 +279,23 @@ class TalkController extends BaseController {
 			}
 		});
 		DB::commit();
+		// if it was a new talk send an email
+		if ($talk_id == null) {
+			$cc = array();
+			$speakers = User::whereIn('id', Input::get('speakers'))->get();
+			foreach ($speakers as $spk) {
+				$cc[$spk->email] = ucwords(strtolower($spk->name));
+			}
+
+			Mail::send('emails.talk_new', 
+				array('talk' => $talk), 
+				function($message) use ($cc)
+			{
+				$message->to(Auth::user()->email, Auth::user()->name)
+					->subject(trans('email.newTalkSubject'))
+					->cc($cc);
+			});
+		}
 
 		// redirect to view saved post
 		return Redirect::to('talk/' . $talk->id);
@@ -293,10 +311,26 @@ class TalkController extends BaseController {
 			return $this->unauthorized();
 		}		
 		
+		$user = Auth::user();
 		$res = new Reservation();
 		$res->talk_id = $talk_id;
-		$res->user_id = Auth::user()->id;
+		$res->user_id = $user->id;
 		$res->save();
+
+		// If it has a manager, ask for permission
+		$to = $user->manager()->first();
+		if (!empty($to)) {
+			$talk = Talk::findOrFail($talk_id);
+			Mail::send('emails.talk_reservation', 
+				array(	'talk' => $talk, 
+					'user' => $user, 
+					'manager' => $to), 
+				function($message) use ($to)
+			{
+				$message->subject(trans('email.resAskSubject'))
+					->to($to->email, ucwords(strtolower($to->name)));
+			});
+		}	
 
 		// get back to the talk view
 		return Redirect::to('talk/'.$talk_id);
@@ -333,7 +367,7 @@ class TalkController extends BaseController {
 	{
 		if (Auth::user()->id != $mgr_id)
 			return $this->unauthorized();
-
+		$user = 	Auth::user();
 
 		$status = 	Input::get('status');
 		$comments =	Input::get('comment');
@@ -343,6 +377,7 @@ class TalkController extends BaseController {
 
 		$valid = true;
 		foreach($resa as $res) {
+			$statusMail = ($res->status != $status[$res->id]);
 			$res->status = $status[$res->id];
 			$res->comment = e($comments[$res->id]);
 			if ($res->status == 'refused' && $res->comment == '') {
@@ -351,6 +386,17 @@ class TalkController extends BaseController {
 			}
 			// save whatever is already valid
 			$res->save();
+			if (!$statusMail)
+				continue;
+			$to = $res->user()->firstOrFail();
+			$talk = $res->talk()->firstOrFail();
+			Mail::send('emails.talk_res_status', 
+				array('talk' => $talk, 'res' => $res), 
+				function($message) use ($to)
+			{
+				$message->subject(trans('email.resStatusSubject'))
+					->to($to->email, ucwords(strtolower($to->name)));
+			});
 		}
 		if (!$valid) {
 			Session::flash('reservation_errors', 
@@ -359,14 +405,68 @@ class TalkController extends BaseController {
 		}
 
 
-		$inputs= Input::all();
-
-		ob_start();
-		var_dump($inputs);
-		$result = ob_get_clean();
-
 		return Redirect::to('user/'.$mgr_id);
 
+	}
+
+	/**
+	 * Send email to reservers for cancelled or deleted talks 
+	 */
+	protected function mailDeletedReservations($talk) {
+		$mail = 'emails.talk_deleted';
+		$bcc = array();
+		$resUsers = $talk->reservationUsers()
+			->where('reservations.status','!=','cancelled')->get();
+		foreach ($resUsers as $user) {
+			if ($user->email != null)
+				$bcc[$user->email] = ucwords(strtolower($user->name));
+		}
+		if (empty($bcc))
+			return;
+
+		// Now send email!
+		Mail::send('emails.talk_deleted', 
+			array('talk' => $talk), 
+			function($message) use ($bcc)
+		{
+			$message->subject(trans('email.delTalkSubject'))
+				->bcc($bcc);
+		});
+	}
+
+	/**
+	 * Send email for changed status (for speakers)
+	 */
+	protected function mailStatusChange($talk, $status) 
+	{
+		if ($status == 'approved') {
+			$subject = 'email.statusApprSubject';
+		}
+		else if ($status == 'cancelled') {
+			$subject = 'email.statusCancelSubject';
+		}
+		else if ($status == 'deleted') {
+			$subject = 'email.statusDeletedSubject';
+		}
+		else {
+			return $this->unauthorized();
+		}
+
+		$speakers = $talk->speakerUsers();
+		$to = $talk->creator()->first(); 
+		$cc = array();	
+		foreach ($speakers as $spk) {
+			$cc[$spk->email] = ucwords(strtolower($spk->name));
+		}
+		Mail::send('emails.talk_status', 
+			array('talk' => $talk, 'status' => $status), 
+			function($message) use ($cc, $subject, $to)
+		{
+			$message->subject(trans($subject))
+				->to($to->email, ucwords(strtolower($to->name)))
+				->cc($cc);
+		});
+		
 	}
 
 	/**
@@ -375,19 +475,30 @@ class TalkController extends BaseController {
 	 */
 	public function changeStatus($talk_id)
 	{
-		if (!$this->loggedAdmin()) {
+		if (!$this->loggedAdmin()) 
 			return $this->unauthorized();
-		}
 
 		$talk = Talk::findOrFail($talk_id);
 		$status = Input::get('talk_status');
 		if (!in_array($status, 
 			array('pending', 'approved', 'cancelled')))
 			return $this->unauthorized();
-		// status validation already in route pattern
 		$talk->status = $status;
-
 		$talk->save();
+		
+		// prepare mail based on status change
+		$mailSend = null;
+		if ($talk->future()) {
+			if ($status == 'approved') {
+				$this->mailStatusChange($talk, $status);
+			}
+			else if ($status == 'cancelled') {
+				$this->mailStatusChange($talk, $status);
+				$this->mailDeletedReservations($talk);
+				// if we cancel talk, delete reservations
+				Reservation::where('talk_id', $talk->id)->delete();
+			}
+		}	
 
 		// get back to the talk view
 		return Redirect::to('talk/'.$talk_id);
@@ -405,8 +516,15 @@ class TalkController extends BaseController {
 		$talk = Talk::findOrFail($talk_id);
 		$title = $talk->title;
 		
+		if ($talk->future()) {
+			// first send mails to speakers and reserved users
+			$this->mailStatusChange($talk, 'deleted');
+			$this->mailDeletedReservations($talk);
+		}
+
 		DB::transaction(function($talk) use ($talk)
 		{
+			// this will delete cascade on tables related to talk
 			$talk->delete();	
 		});
 		DB::commit();

@@ -7,9 +7,23 @@ class Talk extends Eloquent {
 		return $this->hasMany('Reservation');
 	}
 
+	public function reservationUsers()
+	{
+		return User::join('reservations','users.id','=','reservations.user_id')
+			->join('talks','reservations.talk_id','=','talks.id')
+			->where('talks.id',$this->id);
+
+
+	}
+
 	public function speakers()
 	{
 		return $this->hasMany('Speaker');
+	}
+
+	public function speakerUsers()
+	{
+		return $this->hasManyThrough('User', 'Speaker');
 	}
 
 	public function comments()

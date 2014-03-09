@@ -2,7 +2,7 @@
 
 class Reservation extends Eloquent {
 
-	public function session()
+	public function talk()
 	{
 		return $this->belongsTo('Talk');
 	}

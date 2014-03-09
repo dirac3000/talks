@@ -112,7 +112,8 @@ return array(
 	'talkActDelete' =>	'Delete',
 	'talkConfirmMsg' =>	'Are you sure you want to confirm this talk?'
 				.'\nThis will make the talk open to reservations.',
-	'talkCancelMsg' =>	'Are you sure you want to cancel this talk?',
+	'talkCancelMsg' =>	'Are you sure you want to cancel this talk?'
+				.'\nThis will delete all reservations.',
 	'talkDeleteMsg' =>	'Are you sure you want to delete this talk?'
 				.'\nThis action cannot be undone.',
 
