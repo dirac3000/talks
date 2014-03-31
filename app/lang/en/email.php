@@ -8,7 +8,7 @@ return array(
 	 * New talk 
 	 */
 	'newTalkSubject' =>	'New talk',
-	'newTalkPt1' =>		'A new talk has been created, with title: ',
+	'newTalkPt1' =>		'A new talk has been created with title: ',
 	'newTalkPt2' =>		'You received this email because you are either the talk creator or the talk speaker. You can now login and visit the talk page:',
 
 	/* 
@@ -54,7 +54,7 @@ return array(
 	'resStatus_approved' =>	'approved',	
 	'resStatus_pending' =>	'waiting for approval',	
 	'resStatus_refused' =>	'refused',	
-	'resStatusPt4' =>	'To see the your reservations, you can visit your profile page:',
+	'resStatusPt4' =>	'To see your reservations, you can visit your profile page:',
 	
 
 	/* Signature */

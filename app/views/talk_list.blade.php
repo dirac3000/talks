@@ -3,7 +3,7 @@
 @section('content')
 	<h2>{{ $title }}</h2>
  	{{ Table::striped_bordered_hover_condensed_open() }}
-	{{ Table::headers('Talk Name', 'Location', 'Date') }}
+	{{ Table::headers(trans('messages.listName'), trans('messages.listLocation'), trans('messages.listDate')) }}
     <tbody class="talks-table">
     @foreach ($talks as $talk)
     <tr href="{{ URL::to('talk')}}/{{ $talk->id }}">

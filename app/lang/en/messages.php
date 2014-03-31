@@ -9,6 +9,11 @@ return array(
 	'upcomingTalksTitle' =>	'Upcoming Talks',
 	'pastTalksTitle' =>	'Past Talks',
 
+	/* Talk list */
+	'listName' =>		'Talk Name',
+	'listLocation' =>	'Location',
+	'listDate' =>		'Date',
+
 	/* Login View */
 	'loginUsername' =>	'Username',
 	'loginPassword' =>	'Password',
