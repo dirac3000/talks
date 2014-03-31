@@ -35,6 +35,18 @@ return array(
 	'editFormLocation' =>	'Location',
 	'editFormLocationH' =>	'Please confirm with your room reservation system before filling this information.',
 	'editFormSave' =>	'Save',
+	'editFormGrrNone' =>	'None selected',
+	'editFormGrrConfirm' =>	'Check Availability',
+	'editFormGrrCheck' =>	'Checking...',
+	'editFormGrrNoLoc' =>	'No location selected.',
+	'editFormGrrBadDate' =>	'Start date or end date are invalid.',
+	'editFormGrrError' =>	'An error occurred: ',
+	'editFormGrrOK' =>	'The selected room is available for the talk.',
+	'editFormGrrNA' =>	'The selected room is not available.',
+
+
+
+
 
 	/* Talk view */
 	'viewReservations' =>	'Reservations',

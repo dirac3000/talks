@@ -2,6 +2,14 @@
 
 return array(
 
+
+	/*
+	 * Talks specific settings
+	 */
+	'use_grr' => true,
+	'grr_user' => 'ADMINISTRATEUR',
+
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application Debug Mode
@@ -39,7 +47,7 @@ return array(
 	|
 	*/
 
-	'timezone' => 'UTC',
+	'timezone' => 'Europe/Paris',
 
 	/*
 	|--------------------------------------------------------------------------

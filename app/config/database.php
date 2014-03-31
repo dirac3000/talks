@@ -57,6 +57,17 @@ return array(
 			'prefix'    => '',
 		),
 
+		'grr' => array(
+			'driver'    => 'mysql',
+			'host'      => 'localhost',
+			'database'  => 'grr',
+			'username'  => 'root',
+			'password'  => 'Parrot2014',
+			'charset'   => 'utf8',
+			'collation' => 'utf8_unicode_ci',
+			'prefix'    => 'grr_',
+		),
+
 	),
 
 	/*

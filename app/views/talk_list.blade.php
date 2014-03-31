@@ -21,7 +21,7 @@
 	</a>
 	</td>
         <td>{{ $talk->location }}</td>
-        <td>{{ date('d/m/Y', strtotime($talk->date_start)) }}</td>
+        <td>{{ ($talk->date_start != 0) ?  date('d/m/Y', strtotime($talk->date_start)) : trans('messages.viewTBD') }}</td>
     </tr>
     @endforeach
     <tbody>

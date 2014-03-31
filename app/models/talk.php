@@ -23,7 +23,8 @@ class Talk extends Eloquent {
 
 	public function speakerUsers()
 	{
-		return $this->hasManyThrough('User', 'Speaker');
+		return User::join('speakers','users.id','=','speakers.user_id')
+			->where('speakers.talk_id',$this->id);
 	}
 
 	public function comments()

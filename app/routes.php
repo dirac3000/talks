@@ -85,6 +85,9 @@ Route::delete('talk_delete/{id}',
 Route::get('talk_attendance/{id}', 
 	array('uses' => 'TalkController@attendance'));
 
+// Get GRR resources
+Route::post('talk_grr', 
+	array('before' => 'auth', 'uses' => 'TalkController@checkGrrJson'));
 
 /*
  * LOGIN PART

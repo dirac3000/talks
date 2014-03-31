@@ -70,9 +70,9 @@
 	<dt>{{ trans('messages.editFormDesc') }}</dt>
 	<dd>{{ $talk->description? nl2br($talk->description) : trans('messages.viewNA') }}</dd>
 	<dt>{{ trans('messages.editFormDateStart') }}</dt>
-	<dd>{{ $talk->date_end? $talk->date_start : trans('messages.viewTBD') }}</dd>
+	<dd>{{ ($talk->date_start != 0) ? $talk->date_start : trans('messages.viewTBD') }}</dd>
 	<dt>{{ trans('messages.editFormDateEnd') }}</dt>
-	<dd>{{ $talk->date_end? $talk->date_end : trans('messages.viewTBD') }}</dd>
+	<dd>{{  ($talk->date_end != 0)? $talk->date_end : trans('messages.viewTBD') }}</dd>
 	<dt>{{ trans('messages.editFormPlaces') }}</dt>
 	<dd>{{ $talk->places? 
     	($talk->places - $confirmed).'/'.$talk->places : trans('messages.viewTBD') }}</dd>

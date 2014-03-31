@@ -28,14 +28,18 @@ class TalkController extends BaseController {
 	protected function getTalks($condition)
 	{
 		if ($this->loggedAdmin()) {
-			$talks = Talk::where('date_start', $condition, new DateTime('today'))->
-				orderBy('date_start', 'asc')->paginate(20);
+			$talks = Talk::where('date_start', $condition, new DateTime('today'));
 		}
 		else {
 			$talks = Talk::where('status','=','approved')->
-				where('date_start', $condition, new DateTime('today'))->
-				orderBy('date_start', 'asc')->paginate(20);
+				where('date_start', $condition, new DateTime('today'));
 		}
+		if ($condition == '>=')
+			$talks = $talks->orWhere('date_start', '0-0-0');
+		else
+			$talks = $talks->where('date_start', '<>', '0-0-0');
+
+		$talks = $talks->orderBy('date_start', 'asc')->paginate(20);
 
 		return View::make('talk_list')
 			->with('talks', $talks);
@@ -90,7 +94,7 @@ class TalkController extends BaseController {
 			on r.user_id = u.id
 			where r.talk_id = ? 
 			and
-		       	status = "approved"
+		       	status <> "refused"
 			order by status', array($talk->id));
 
 
@@ -133,7 +137,7 @@ class TalkController extends BaseController {
 		$confirmed = DB::select('select count(id) as c
 			from reservations
 			where talk_id = ?
-			and status = "approved"', array($talk->id))[0]->c;
+			and status <> "refused"', array($talk->id))[0]->c;
 
 		$attachments = null;
 		if ($talk_rights != null)
@@ -164,10 +168,16 @@ class TalkController extends BaseController {
 		foreach ($talksUser as $u) {
 			$name_list[$u->id] = $u->name;
 		}
+		$grr_rooms = null;
+		if (Config::get('app.use_grr')) {
+			$grr_rooms = GrrRoom::orderBy('room_name')
+				->get(array('id','room_name'));
+		}
 
 		return View::make('talk_edit')->with('user', $user)
 			->with('name_list',$name_list)
-			->with('talk', $talk);
+			->with('talk', $talk)
+			->with('grr_rooms', $grr_rooms);		
 	}
 
  	/**
@@ -204,7 +214,6 @@ class TalkController extends BaseController {
 			->with('title', trans('messages.editTalkTitle'))
 			->with('speakers_list', $speakers_list)
 			->with('talk_rights', $talk_rights);
-			
 	}
 
  	/**
@@ -232,6 +241,11 @@ class TalkController extends BaseController {
 				'date'.$after_start,
 			'places'	=> 'numeric',
 		);
+		// If we use grr, add grr validation
+		if (Config::get('app.use_grr') && !$this->checkGrr()) {
+			$rules['location'] = 
+				'different:'.Input::get('location');
+		}
 		$validator = Validator::make(
 			Input::all(),
 			$rules);
@@ -241,6 +255,7 @@ class TalkController extends BaseController {
 
 		// get new or edited talk and validate rights
 		$talk_id = (Input::get('talk_id'));
+		$talk = null;
 		if ($talk_id != null) {
 			$talk = Talk::findOrFail($talk_id);
 		}
@@ -279,6 +294,33 @@ class TalkController extends BaseController {
 			}
 		});
 		DB::commit();
+		if (Config::get('app.use_grr') and $talk->location) {
+			$grrUser = Config::get('app.grr_user');
+			$title_old = Input::get('talk_title_old');	
+			$entry = null;
+			if ($title_old != null) {
+				$entry = GrrEntry::where('description', 
+					URL::to('talk/'. $talk->id))->first();
+				if ($entry == null)
+					$entry = new GrrEntry();
+			}
+			else
+				$entry = new GrrEntry();
+			$entry->timestamps = false;
+			$room = GrrRoom::where('room_name', $talk->location)->first();
+			// fill entry in GRR
+			$entry->name = $talk->title;
+			$entry->type = 'T';
+			$entry->room_id = $room->id;
+			$entry->start_time = strtotime($talk->date_start);
+			$entry->end_time = strtotime($talk->date_end);
+			$entry->create_by = $grrUser;
+			$entry->beneficiaire = $grrUser;
+			$entry->description = URL::to('talk/'. $talk->id);
+			//dd($entry->toArray());
+			$entry->save();
+		}
+
 		// if it was a new talk send an email
 		if ($talk_id == null) {
 			$cc = array();
@@ -452,7 +494,7 @@ class TalkController extends BaseController {
 			return $this->unauthorized();
 		}
 
-		$speakers = $talk->speakerUsers();
+		$speakers = $talk->speakerUsers()->get();
 		$to = $talk->creator()->first(); 
 		$cc = array();	
 		foreach ($speakers as $spk) {
@@ -522,6 +564,15 @@ class TalkController extends BaseController {
 			$this->mailDeletedReservations($talk);
 		}
 
+		if (Config::get('app.use_grr')) {
+			$grrUser = Config::get('app.grr_user');
+			$entry = null;
+			$entry = GrrEntry::where('description', 
+				URL::to('talk/'. $talk->id))->first();
+			if ($entry != null) {
+				$entry->delete();
+			}
+		}
 		DB::transaction(function($talk) use ($talk)
 		{
 			// this will delete cascade on tables related to talk
@@ -640,6 +691,42 @@ class TalkController extends BaseController {
 			->with('message', trans('messages.attachmentDeleted'));
 
 	}
+
+	/**
+	 * Check if the resource specified in the form is available
+	 * @return bool
+	 */
+	protected function checkGrr()
+	{
+		$title = Input::get('talk_title_old');
+		$date_start = Input::get('date_start');
+		$date_end = Input::get('date_end');
+		$location = Input::get('location');
+		$talk_id = (Input::get('talk_id'));
+
+		$entry = GrrEntry::join('room', 'entry.room_id', '=', 'room.id')
+			->where('room.room_name', $location)
+			->where('start_time', '<=', strtotime($date_end))
+			->where('end_time', '>=', strtotime($date_start))
+			->where('entry.description', '<>', URL::to('talk/'.$talk_id))
+			->first(array('entry.*'));
+		//dd(DB::connection('grr')->getQueryLog());
+		return ($entry == null);
+	}
+
+	/**
+	 * Check if the resource is available
+	 * @return json
+	 */
+	public function checkGrrJson()
+	{
+		if (Auth::guest()) {
+			return Response::json(null, 404);;
+		}		
+		$check = $this->checkGrr();
+		return Response::json($check, 200);
+	}
+
 }
 
 
