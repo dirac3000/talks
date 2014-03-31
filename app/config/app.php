@@ -6,7 +6,7 @@ return array(
 	/*
 	 * Talks specific settings
 	 */
-	'use_grr' => true,
+	'use_grr' => false,
 	'grr_user' => 'ADMINISTRATEUR',
 
 
