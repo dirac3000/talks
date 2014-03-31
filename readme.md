@@ -1,21 +1,72 @@
-## Laravel PHP Framework
+# Talks Installation
 
-[![Latest Stable Version](https://poser.pugx.org/laravel/framework/version.png)](https://packagist.org/packages/laravel/framework) [![Total Downloads](https://poser.pugx.org/laravel/framework/d/total.png)](https://packagist.org/packages/laravel/framework) [![Build Status](https://travis-ci.org/laravel/framework.png)](https://travis-ci.org/laravel/framework)
+## About Talks
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as authentication, routing, sessions, and caching.
+Talks is a web application project to manage talks sessions.
+Originally developed as an internal competition for Parrot S.A. by Alvaro Moran, copyright 2014, it was later dropped, the company preferred a [Joomla](http://www.joomla.org/) based
+solution. 
 
-Laravel aims to make the development process a pleasing one for the developer without sacrificing application functionality. Happy developers make the best code. To this end, we've attempted to combine the very best of what we have seen in other web frameworks, including frameworks implemented in other languages, such as Ruby on Rails, ASP.NET MVC, and Sinatra.
+I still think this one is a cleaner solution, so I decided to share it anyway.
+This web application is based on [Laravel](http://laravel.com/), a php framework to develop MVC web applications. It uses [Twitter Bootstrap](http://getbootstrap.com/) for the UI and few other projects for the interface.
+ 
+## Composer
 
-Laravel is accessible, yet powerful, providing powerful tools needed for large, robust applications. A superb inversion of control container, expressive migration system, and tightly integrated unit testing support give you the tools you need to build any application with which you are tasked.
+You need to install composer in order to bring up the application. To do so just type:
 
-## Official Documentation
+	php -r "readfile('https://getcomposer.org/installer');" | php
 
-Documentation for the entire framework can be found on the [Laravel website](http://laravel.com/docs).
+This will install the composer package manager. Go on installing the talks packages:	
 
-### Contributing To Laravel
+	./composer.phar install
 
-**All issues and pull requests should be filed on the [laravel/framework](http://github.com/laravel/framework) repository.**
 
-### License
+## Setup
 
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+These Setup comments were written with Debian in mind.
+Beware of setting the correct permisisons. For example, if Talks resides in a directory called `talks`:
+
+	chown -R root:www-data talks
+	cd talks
+	chmod -R gu+w app/storage
+	
+Apache should be configured in order to point to the public folder. For example, your `/etc/apache2/sites-available/talks` could look like this one:
+
+	<VirtualHost *:80>
+	DocumentRoot /var/www/talks/public
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride All
+	</Directory>
+	</VirtualHost>
+
+Another issue could be the apache rewrite module. On Debian, you could run:
+
+	a2enmod rewrite
+	service apache2 restart
+	
+Finally, you should configure your `app/config/app.php`.
+
+For database configuration edit `application/config/database.php` with the database information needed.
+To bing up a database you should do:
+
+	php artisan migrate:install
+	php artisan migrate:refresh --seed
+	
+This will setup Sessions' tables and an administrator user with password set to "password" and few more test data.
+
+
+## GRR Integration
+
+[GRR](http://grr.mutualibre.org/) is a room reservation system quite popular in France.  
+In order to activate GRR integration, set `use_grr` to `true` in your application configuration (`app/config/app.php`) and set up the GRR connection settings in the same file.
+
+The integration assumes that GRR has a `Talk` area type (it could seed it) and the Room have all different names.
+Creating, modifying and deleting talks will make the relevant changes to the GRR database.
+
+Do not edit the reservation if you want Talks to be able to recognise the talks related entries.
+
+## Languages
+
+Talks supports the following languages: English, French.
+
+If you want to change language you can set it in the `app/config/app.php` file. If you want to modify any text, just check the `app/lang` directory.
