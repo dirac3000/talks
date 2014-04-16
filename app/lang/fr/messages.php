@@ -71,6 +71,7 @@ return array(
 	/* User View */
 	'userUsername' =>	"Nom d'utilisateur",
 	'userEmail' =>		'E-mail',
+	'userName' =>		"Nom complet",
 	'userManager' =>	'Manager',
 	'userNoManager' =>	"Pas de manager",
 	'userRights' =>		'Droits',

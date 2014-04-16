@@ -122,6 +122,49 @@ class UserController extends BaseController {
 			->with('managers', $managers);
 	}
 
+	/**
+	 * Save user changes
+	 * @return View
+	 */	
+	public function save()
+	{
+		if (!$this->loggedAdmin()) 
+			return $this->unauthorized();
+
+		$rules = array(
+			'username'	=> 'required|min:3',
+			'password'	=> 'min:6',
+			'email'		=> 'required|email',
+			'name'		=> 'required|min:3',
+		);
+		$validator = Validator::make(
+			Input::all(),
+			$rules);
+		if ($validator->fails())
+			return Redirect::back()->withInput()
+				->withErrors($validator);
+
+		// get new or edited talk and validate rights
+		$user_id = (Input::get('user_id'));
+		$user = null;
+		if ($user_id != null) {
+			$user = User::findOrFail($user_id);
+		}
+		else {
+			$user = new User();
+		}
+		$user->username		=  (Input::get('username'));
+		if (Input::get('password') != '')
+			$user->password	=  Hash::make(Input::get('password'));
+		$user->email		=  (Input::get('email'));
+		$user->name		=  (Input::get('name'));
+		$user->manager_id	=  (Input::get('manager'));
+		$user->rights		=  (Input::get('rights'));
+
+		$user->save();
+		// redirect to view saved user
+		return Redirect::to('user/'.$user->id);
+	}
 
  	/**
 	 * Change a user's rights

@@ -121,6 +121,9 @@ Route::get('user/{id}/edit',
 // User Rigths Change
 Route::get('user/{id}/rights={rights}', 'UserController@changeRights');
 
+// When the new post is submitted we handle that here
+Route::post('user_save', 
+	array('before' => 'auth', 'uses' => 'UserController@save'));
 
 
 

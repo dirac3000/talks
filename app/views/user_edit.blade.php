@@ -22,6 +22,11 @@
         {{ $errors->first('password', Alert::error(":message")) }}
         <p>{{ Form::password('password') }}</p>
 	
+        <!-- name field -->
+        <p>{{ Form::label('name', trans('messages.userName')) }}</p>
+        {{ $errors->first('name', Alert::error(":message")) }}
+        <p>{{ Form::text('name', Input::old('name', $user->name)) }}</p>
+
         <!-- email field -->
         <p>{{ Form::label('email', trans('messages.userEmail')) }}</p>
         {{ $errors->first('email', Alert::error(":message")) }}
@@ -29,7 +34,7 @@
 
 	<!-- manager field -->
         <p class="row">{{ Form::label('manager', trans('messages.userManager'), array('class' => 'col-md-2 text-right')) }}
-        {{ $errors->first('username', Alert::error(":message")) }}
+        {{ $errors->first('manager', Alert::error(":message")) }}
 	<select id="manager" name="manager" class="select2 col-md-10">
 	<option value="">{{ trans('messages.userNoManager') }}</option>
 @foreach ($managers as $mgr)
