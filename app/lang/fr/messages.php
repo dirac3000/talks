@@ -61,11 +61,18 @@ return array(
 	'viewAttMakePublic' =>	'Rendre publique',
 	'viewAttRemove' =>	'Supprimer',
 
+	/* User Template */
+	'userView' =>		'Afficher',
+	'userEdit' =>		'Modifier',
+	'userDelete' =>		'Supprimer Utilisateur',
+	'userDeleteMsg' =>	'Etes-vous sûr de vouloir supprimer cet utilisateur ?'
+				.'\nCette action ne peut pas être anulée.',
+
 	/* User View */
 	'userUsername' =>	"Nom d'utilisateur",
 	'userEmail' =>		'E-mail',
 	'userManager' =>	'Manager',
-	'userNoManager' =>	"Cet utilisateur n'a pas de manager",
+	'userNoManager' =>	"Pas de manager",
 	'userRights' =>		'Droits',
 	/* The following are translations for DB enums */
 	'userRights_simple' =>	'Simple',
@@ -87,6 +94,9 @@ return array(
 	'userTResConfirmed' =>	'Confirm&eacute;e',
 	'userTResRefused' =>	'Refus&eacute;e',
 	'userTResSave' =>	'Enregistrer r&eacute;servations',
+	'userEditLink' =>	'Modifier',
+	'userPassword' =>	'Mot de Passe',
+
 
 	/* User list view */
 	'usersTitle' =>		'Utilisateurs',

@@ -40,7 +40,6 @@ class UserController extends BaseController {
 	 */	
 	public function view($id)
 	{
-		$adminActions = false;
 		if ($this->loggedAdmin() && $id != Auth::user()->id) {
 			Session::flash('user_admin_actions', 'true');
 		}
@@ -93,6 +92,36 @@ class UserController extends BaseController {
 			->with('mgr_reservations', $mgr_resa);
 
 	}
+
+ 	/**
+	 * Edit one user
+	 * @return View
+	 */	
+	public function edit($id)
+	{
+		if (!$this->loggedAdmin()) 
+			return $this->unauthorized();
+
+		if ($id != Auth::user()->id) {
+			Session::flash('user_admin_actions', 'true');
+		}
+		$userToEdit = User::findOrFail($id);
+
+		// if manager is not null, get name
+		$manager = null;
+		if ($userToEdit->manager_id != null) {
+			$manager = 
+				User::find($userToEdit->manager_id);
+		}
+		
+		$managers = User::orderBy('name','asc')
+			->get(array('id','name'));
+
+		return View::make('user_edit')
+			->with('user', $userToEdit)
+			->with('managers', $managers);
+	}
+
 
  	/**
 	 * Change a user's rights

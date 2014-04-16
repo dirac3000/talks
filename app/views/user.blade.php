@@ -1,7 +1,10 @@
-@extends('templates.main')
-	
-@section('content')
-	<h2>{{ ucwords(strtolower($user->name)) }}</h2>
+@extends('templates.user')
+
+@section('user_nav_settings')
+<?php $tab_selected='view'; ?>
+@stop
+
+@section('user_main')
 
 <dl class="dl-horizontal">
 	<dt>{{ trans('messages.userUsername') }}</dt><dd>{{ $user->username? htmlentities($user->username) : trans('messages.viewNA') }}</dd>

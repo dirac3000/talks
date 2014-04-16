@@ -65,11 +65,18 @@ return array(
 	'viewAttMakePublic' =>	'Make Public',
 	'viewAttRemove' =>	'Remove',
 
+	/* User Template */
+	'userView' =>		'View',
+	'userEdit' =>		'Edit',
+	'userDelete' =>		'Delete User',
+	'userDeleteMsg' =>	'Are you sure you want to delete this user?'
+				.'\nThis action cannot be undone.',
+
 	/* User View */
 	'userUsername' =>	'Username',
 	'userEmail' =>		'Email',
 	'userManager' =>	'Manager',
-	'userNoManager' =>	'This user has no manager',
+	'userNoManager' =>	'No manager',
 	'userRights' =>		'Rights',
 	/* The following are translations for DB enums */
 	'userRights_simple' =>	'Simple',
@@ -91,6 +98,8 @@ return array(
 	'userTResConfirmed' =>	'Confirmed',
 	'userTResRefused' =>	'Refused',
 	'userTResSave' =>	'Save Reservations',
+	'userEditLink' =>	'Edit',
+	'userPassword' =>	'Password',
 
 	/* User list view */
 	'usersTitle' =>		'Users',

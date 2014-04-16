@@ -111,8 +111,12 @@ Route::get('logout', 'AuthController@getLogout');
 Route::get('user_list', 
 	array('before' => 'auth', 'uses' => 'UserController@showList'));
 
-// User Edit
+// User View
 Route::get('user/{id}', 'UserController@view');
+
+// User Edit
+Route::get('user/{id}/edit', 
+	array('before' => 'auth', 'uses' => 'UserController@edit'));
 
 // User Rigths Change
 Route::get('user/{id}/rights={rights}', 'UserController@changeRights');
