@@ -18,6 +18,11 @@ class User extends Eloquent implements UserInterface {
          */
         protected $hidden = array('password');
 
+	/**
+	 * We won't actually delete users
+	 */
+	protected $softDelete = true;
+
         /**
          * Get the unique identifier for the user.
          *

@@ -4,6 +4,7 @@ return array(
 	'logoutMessage' =>	'Logout successful.',
 	'talkDeleted' => 	'Talk ":title" deleted.',
 	'attachmentDeleted' =>	'Attachment deleted.',
+	'userDeleted' =>	'User :name deleted.',
 
 	/* Titles and text elements */
 	'upcomingTalksTitle' =>	'Upcoming Talks',

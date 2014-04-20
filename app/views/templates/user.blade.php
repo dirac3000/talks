@@ -4,8 +4,8 @@
 <h2 class="row"><span class="col-md-10">{{ $user->name }} </span>
 @if (Session::has('user_admin_actions'))
 <div class="col-md-2 pull-right">
-	{{ Form::open(array( 'id' => 'delete_user', 'url' => 'user_delete/'.$user->id)) }}
-	<button type="submit" class="btn btn-danger ">{{ trans('messages.userDelete') }}</butfon>
+	{{ Form::open(array('id' => 'delete_user', 'url' => 'user/'. $user->id.'/delete', 'method' => 'delete')) }}
+	<button type="submit" class="btn btn-danger "><span class="glyphicon glyphicon-remove"></span> {{ trans('messages.userDelete') }}</butfon>
 	{{ Form::close() }}
 </div>
 @endif
@@ -34,7 +34,7 @@
     <script>
 
 	$('#delete_user').submit(function(){
-		return confirm("{{ trans('messages.talkDeleteMsg') }}");
+		return confirm("{{ trans('messages.userDeleteMsg') }}");
 	});
     </script>
 @endif

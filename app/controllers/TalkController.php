@@ -92,7 +92,9 @@ class TalkController extends BaseController {
 		$resa = DB::select('select r.id as id, name, status, user_id
 			from reservations as r inner join users as u 
 			on r.user_id = u.id
-			where r.talk_id = ? 
+			where r.talk_id = ?
+			and
+			u.deleted_at is null
 			and
 		       	status <> "refused"
 			order by status', array($talk->id));
@@ -130,6 +132,8 @@ class TalkController extends BaseController {
 			from reservations as r inner join users as u 
 			on r.user_id = u.id
 			where r.talk_id = ? 
+			and
+			u.deleted_at is null
 			and
 		       	(status != "refused" or u.id = ?)
 			order by status', array($talk->id, $user_id));

@@ -183,6 +183,42 @@ class UserController extends BaseController {
 		return Redirect::to('/user/'.$id);	
 	}
 
+	/**
+	 * delete a user
+	 * @return Redirect
+	 */
+	public function delete($user_id)
+	{
+		if (!$this->loggedAdmin() || Auth::user()->id == $user_id) {
+			return $this->unauthorized();
+		}
+		$user = User::findOrFail($user_id);
+		$name = $user->name;
+
+		// get future reservations ids
+		$resa_ids = Reservation::
+			join('talks', 'reservations.talk_id', '=', 'talks.id')
+			->where('talks.date_start', '>', new DateTime('today'))
+			->where('reservations.user_id', $user_id)
+			->get(array('reservations.id'));
+		$ids = array();
+		foreach ($resa_ids as $id)
+			$ids[] = $id->id;
+
+		DB::transaction(function() use ($ids, $user) 
+		{
+			if (!empty($ids))
+				Reservation::whereIn('id', $ids)
+					->delete();
+			$user->delete();
+		});
+
+		// get back to the talk list
+		$message = Lang::get('messages.userDeleted', 
+			array('name' => $name));
+		return Redirect::to('user_list')
+			->with('message',$message);
+	}
 
 }
 

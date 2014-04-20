@@ -125,6 +125,9 @@ Route::get('user/{id}/rights={rights}', 'UserController@changeRights');
 Route::post('user_save', 
 	array('before' => 'auth', 'uses' => 'UserController@save'));
 
+// Delete a User
+Route::delete('user/{id}/delete', 
+	array('before' => 'auth', 'uses' => 'UserController@delete'));
 
 
 /*

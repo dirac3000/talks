@@ -4,6 +4,7 @@ return array(
 	'logoutMessage' =>	'D&eacute;connexion r&eacute;ussie.',
 	'talkDeleted' => 	'Formation ":title" supprim&eacute;e.',
 	'attachmentDeleted' =>	'Document supprim&eacute;.',
+	'userDeleted' =>	'Utilisateur :name supprimé.',
 
 	/* Titles and text elements */
 	'upcomingTalksTitle' =>	'Prochaines Formations',
@@ -97,7 +98,6 @@ return array(
 	'userTResSave' =>	'Enregistrer r&eacute;servations',
 	'userEditLink' =>	'Modifier',
 	'userPassword' =>	'Mot de Passe',
-
 
 	/* User list view */
 	'usersTitle' =>		'Utilisateurs',
