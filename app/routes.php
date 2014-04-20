@@ -111,6 +111,10 @@ Route::get('logout', 'AuthController@getLogout');
 Route::get('user_list', 
 	array('before' => 'auth', 'uses' => 'UserController@showList'));
 
+// New user form
+Route::get('user_new', 
+	array('before' => 'auth', 'uses' => 'UserController@create'));
+
 // User View
 Route::get('user/{id}', 'UserController@view');
 

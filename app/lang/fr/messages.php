@@ -106,6 +106,7 @@ return array(
 	'usersUsername' =>	"Nom d'utilisateur",
 	'usersName' =>		'Nom',
 	'usersRights' =>	'Droits',
+	'usersNew' =>		'Nouvel Utilisateur',
 
 	/* Attendance sheet view */
 	'attAttendance' =>	'Feuille de pr&eacute;sence',

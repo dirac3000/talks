@@ -2,6 +2,13 @@
 	
 @section('content')
 <h2>{{ trans('messages.usersTitle') }}</h2>
+
+<div class="row">
+<form id="user_list" class="form-inline pull-right" role="form" action="{{ URL::to('user_new') }}" method="get">
+<button type="submit" class='btn btn-primary '><span class="glyphicon glyphicon-plus"></span> {{ trans('messages.usersNew') }}</button>
+</form>
+</div>
+
 <div class="text-center control-group">
 <form id="user_list" class="form-inline" role="form" action="{{ URL::to('user_list') }}">
 {{ Form::label('search', trans('messages.usersName') ) }} 

@@ -110,6 +110,7 @@ return array(
 	'usersUsername' =>	'Username',
 	'usersName' =>		'Name',
 	'usersRights' =>	'Rights',
+	'usersNew' =>		'New User',
 
 	/* Attendance sheet view */
 	'attAttendance' =>	'Attendance Sheet',

@@ -2,7 +2,7 @@
 	
 @section('content')
 <h2 class="row"><span class="col-md-10">{{ $user->name }} </span>
-@if (Session::has('user_admin_actions'))
+@if ($user_admin_actions == true && Auth::user()->id != $user->id)
 <div class="col-md-2 pull-right">
 	{{ Form::open(array('id' => 'delete_user', 'url' => 'user/'. $user->id.'/delete', 'method' => 'delete')) }}
 	<button type="submit" class="btn btn-danger "><span class="glyphicon glyphicon-remove"></span> {{ trans('messages.userDelete') }}</butfon>
@@ -12,7 +12,7 @@
 </h2>
 
 @yield('user_nav_settings')
-@if (Session::has('user_admin_actions'))
+@if ($user_admin_actions == true)
 <ul class="nav nav-tabs">
 
 <li {{  ($tab_selected == 'view')? 'class="active"' : '' }}>
@@ -30,7 +30,7 @@
 @section('javascripts')
 @parent
 
-@if (Session::has('user_admin_actions'))
+@if ($user_admin_actions == true)
     <script>
 
 	$('#delete_user').submit(function(){

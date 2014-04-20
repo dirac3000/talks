@@ -5,6 +5,9 @@
 @stop
 
 @section('user_main')
+@if ($user_admin_actions == false)
+	<h2>{{ trans('messages.usersNew') }}</h2>
+@endif
 
 <div>
 <br>
@@ -32,6 +35,7 @@
         {{ $errors->first('email', Alert::error(":message")) }}
         <p>{{ Form::text('email', Input::old('email', $user->email)) }}</p>
 
+@if (!Auth::guest() && Auth::user()->rights == "admin")
 	<!-- manager field -->
         <p class="row">{{ Form::label('manager', trans('messages.userManager'), array('class' => 'col-md-2 text-right')) }}
         {{ $errors->first('manager', Alert::error(":message")) }}
@@ -42,7 +46,7 @@
 	{{ $mgr->name }}
 	</option>
 @endforeach
-        </select> </p>
+	</select> </p>
 
 	<!-- rights field -->
 	<p class="row">{{ Form::label('rights', trans('messages.userRights'), array('class' => 'col-md-2 text-right')) }}
@@ -52,6 +56,10 @@
 	<option value="admin" {{ ($user->rights == 'admin')? 'selected':''}}>{{ trans('messages.userRights_admin') }}</option>
 	</select>
 	</p>
+@else
+    	{{ Form::hidden('manager', $user->manager_id) }}
+    	{{ Form::hidden('rights', $user->rights) }}
+@endif
 
        <!-- submit button -->
        <p class="row pull-right">{{ Form::submit('Save', array('class' => 'btn-success')) }}</p>

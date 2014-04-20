@@ -40,8 +40,9 @@ class UserController extends BaseController {
 	 */	
 	public function view($id)
 	{
-		if ($this->loggedAdmin() && $id != Auth::user()->id) {
-			Session::flash('user_admin_actions', 'true');
+		$user_admin_actions = false;
+		if (!Auth::guest() && ($this->loggedAdmin() || $id == Auth::user()->id)) {
+			$user_admin_actions = true;
 		}
 		$userToEdit = User::findOrFail($id);
 
@@ -86,6 +87,7 @@ class UserController extends BaseController {
 		}
 
 		return View::make('user')
+			->with('user_admin_actions', $user_admin_actions)
 			->with('user', $userToEdit)
 			->with('manager', $manager)
 			->with('reservations', $resa)
@@ -99,12 +101,10 @@ class UserController extends BaseController {
 	 */	
 	public function edit($id)
 	{
-		if (!$this->loggedAdmin()) 
+		if (!$this->loggedAdmin() && (!Auth::guest() && Auth::user()->id != $id)) 
 			return $this->unauthorized();
 
-		if ($id != Auth::user()->id) {
-			Session::flash('user_admin_actions', 'true');
-		}
+		$user_admin_actions = true;
 		$userToEdit = User::findOrFail($id);
 
 		// if manager is not null, get name
@@ -118,7 +118,27 @@ class UserController extends BaseController {
 			->get(array('id','name'));
 
 		return View::make('user_edit')
+			->with('user_admin_actions', $user_admin_actions)
 			->with('user', $userToEdit)
+			->with('managers', $managers);
+	}
+
+ 	/**
+	 * Create a user
+	 * @return View
+	 */	
+	public function create()
+	{
+		if (!$this->loggedAdmin()) 
+			return $this->unauthorized();
+
+		$managers = User::orderBy('name','asc')
+			->get(array('id','name'));
+
+		$user = new User();
+		return View::make('user_edit')
+			->with('user_admin_actions', false)
+			->with('user', $user)
 			->with('managers', $managers);
 	}
 
@@ -128,7 +148,9 @@ class UserController extends BaseController {
 	 */	
 	public function save()
 	{
-		if (!$this->loggedAdmin()) 
+		$user_id = (Input::get('user_id'));
+		if (!$this->loggedAdmin() && 
+			(!Auth::guest() && Auth::user()->id != $user_id))
 			return $this->unauthorized();
 
 		$rules = array(
@@ -137,6 +159,13 @@ class UserController extends BaseController {
 			'email'		=> 'required|email',
 			'name'		=> 'required|min:3',
 		);
+		$username = Input::get('username');
+		$userTest = User::where('username', $username)->first();
+		if ($userTest != null)
+		{
+			if (Input::get('user_id') != $userTest->id)
+				$rules['username'] = 'different:'.$username;
+		}
 		$validator = Validator::make(
 			Input::all(),
 			$rules);
@@ -145,7 +174,6 @@ class UserController extends BaseController {
 				->withErrors($validator);
 
 		// get new or edited talk and validate rights
-		$user_id = (Input::get('user_id'));
 		$user = null;
 		if ($user_id != null) {
 			$user = User::findOrFail($user_id);
@@ -158,7 +186,8 @@ class UserController extends BaseController {
 			$user->password	=  Hash::make(Input::get('password'));
 		$user->email		=  (Input::get('email'));
 		$user->name		=  (Input::get('name'));
-		$user->manager_id	=  (Input::get('manager'));
+		if (Input::get('manager') != '')
+			$user->manager_id	=  (Input::get('manager'));
 		$user->rights		=  (Input::get('rights'));
 
 		$user->save();
