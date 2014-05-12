@@ -1,4 +1,4 @@
-# Talks Installation
+# Talks
 
 ## About Talks
 
