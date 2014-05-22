@@ -332,14 +332,16 @@ class TalkController extends BaseController {
 			foreach ($speakers as $spk) {
 				$cc[$spk->email] = ucwords(strtolower($spk->name));
 			}
-
 			Mail::send('emails.talk_new', 
 				array('talk' => $talk), 
 				function($message) use ($cc)
 			{
-				$message->to(Auth::user()->email, Auth::user()->name)
-					->subject(trans('email.newTalkSubject'))
-					->cc($cc);
+				if (Auth::user()->email)
+				{
+					$message->to(Auth::user()->email, Auth::user()->name)
+						->subject(trans('email.newTalkSubject'))
+						->cc($cc);
+				}
 			});
 		}
 

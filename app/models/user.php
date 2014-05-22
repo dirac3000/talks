@@ -43,6 +43,17 @@ class User extends Eloquent implements UserInterface {
                 return $this->password;
         }
 
+	public function getRememberToken()
+	{
+	}
+
+	public function setRememberToken($value)
+	{
+	}
+
+	public function getRememberTokenName()
+	{
+	}
 
 	public function manager()
 	{

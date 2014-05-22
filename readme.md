@@ -46,13 +46,13 @@ Another issue could be the apache rewrite module. On Debian, you could run:
 	
 Finally, you should configure your `app/config/app.php`.
 
-For database configuration edit `application/config/database.php` with the database information needed.
+For database configuration edit `app/config/database.php` with the database information needed.
 To bing up a database you should do:
 
 	php artisan migrate:install
 	php artisan migrate:refresh --seed
 	
-This will setup Sessions' tables and an administrator user with password set to "password" and few more test data.
+This will setup Sessions' tables and an administrator user called admin with password set to "password" and few more test data.
 
 
 ## GRR Integration
