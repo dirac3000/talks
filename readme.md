@@ -3,12 +3,20 @@
 ## About Talks
 
 Talks is a web application project to manage talks sessions.
-Originally developed as an internal competition for Parrot S.A. by Alvaro Moran, copyright 2014, it was later dropped, the company preferred a [Joomla](http://www.joomla.org/) based
-solution. 
+Originally developed as an internal competition for Parrot S.A. by Alvaro Moran, copyright 2014, it was later dropped, the company preferred a different solution. 
 
 I still think this one is a cleaner solution, so I decided to share it anyway.
 This web application is based on [Laravel](http://laravel.com/), a php framework to develop MVC web applications. It uses [Twitter Bootstrap](http://getbootstrap.com/) for the UI and few other projects for the interface.
- 
+
+## Features
+
+- List of available talks as main page
+- Users management (creation, edit) with different rights levels
+- Talks management (creation, edit, deletion), with attachments
+- Users can subscribe to an event
+- Managers can approve/refuse a user to attend to a talk
+- Developed with simplicity in mind
+
 ## Composer
 
 You need to install composer in order to bring up the application. To do so just type:
